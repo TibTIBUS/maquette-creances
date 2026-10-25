@@ -448,8 +448,9 @@ const ARTISANS = [
  ["Irrigation","SARL PERDREAU","HEBERT Mickaël",["02.33.46.41.44"]],
  ["Irrigation","Créances IRRIGATION","Couillard Bertrand",["02.33.47.93.27"]],
  ["Couturière","Coutures & Créations","Mme Colette MASURIER",["06.60.53.93.35"]],
- ["Bien-être","Réflexologie plantaire chinoise & dimensionnelle","Virginie VARNIERE",["06.32.36.05.36"],"https://bulle-en-soi.fr/"]
-].map(([c,n,d,p,w])=>({type:"Artisan",c,n,d,p,w}));
+ ["Bien-être","Réflexologie plantaire chinoise & dimensionnelle","Virginie VARNIERE",["06.32.36.05.36"],"https://bulle-en-soi.fr/"],
+ ["Développeur web","Localia","Accompagne les commerçants, artisans et associations du secteur dans leur présence en ligne.",["06.85.22.47.20"],"https://localiapro.fr/",true]
+].map(([c,n,d,p,w,x])=>({type:"Artisan",c,n,d,p,w,x}));
 const COMMERCES = [
  ["Bars, restaurants","LES MIELLES","Bar, crêperie",["02.33.07.06.30"]],
  ["Bars, restaurants","LE LONGCHAMP","Bar tabac PMU",["02.33.17.07.87"]],
@@ -913,7 +914,7 @@ page("marches","loisirs","Marchés du terroir","Sur le parking de la plage, de 1
 
 /* ---------- Économie ---------- */
 page("economie","economie","Économie","Le maraîchage, la zone d'activités et l'annuaire des professionnels.",()=>`
-  <div class="grid g3 hub">${hubCard("filiere","Carotte des sables, poireau, label Rouge et parc d'activités.")}${hubCard("annuaire","38 artisans et commerces, avec filtres et téléphones.")}</div>`);
+  <div class="grid g3 hub">${hubCard("filiere","Carotte des sables, poireau, label Rouge et parc d'activités.")}${hubCard("annuaire","39 artisans et commerces, avec filtres et téléphones.")}</div>`);
 
 page("filiere","economie","L'économie de la commune","Un territoire traditionnellement maraîcher, en bordure de mer.",()=>`
   <div class="two"><div class="a prose">
@@ -943,7 +944,7 @@ page("annuaire","economie","Artisans et commerces","Les professionnels de Créan
   <div class="grid g3" id="dirList" style="margin-top:12px"></div>
   ${verif("liste des commerces non mise à jour depuis avril 2024 ; téléphone de l'auto-école manquant. Les logos d'entreprises ne sont pas repris.")}`;
 });
-function dirCard(e){ return `<article class="card dir-card"><span class="cat">${esc(e.c)}</span><h3>${esc(e.n)}</h3>${e.d?`<p style="font-size:.9375rem">${esc(e.d)}</p>`:""}${e.p.length?e.p.map(tel).join(" "):`<p class="meta">Téléphone : à compléter</p>`}${e.w?`<p>${ext(e.w,"Site web")}</p>`:""}</article>`; }
+function dirCard(e){ return `<article class="card dir-card"><span class="cat">${esc(e.c)}</span>${e.x?`<span class="tag old" style="align-self:flex-start">Ajout, absent du site actuel</span>`:""}<h3>${esc(e.n)}</h3>${e.d?`<p style="font-size:.9375rem">${esc(e.d)}</p>`:""}${e.p.length?e.p.map(tel).join(" "):`<p class="meta">Téléphone : à compléter</p>`}${e.w?`<p>${ext(e.w,"Site web")}</p>`:""}</article>`; }
 
 /* ---------- Actualités ---------- */
 page("actualites","actualites","Actualités",`${NEWS.length} articles du site actuel, du plus récent au plus ancien.`,()=>`
