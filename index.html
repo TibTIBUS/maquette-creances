@@ -1,0 +1,1065 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Créances — maquette de refonte</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap">
+<style>
+/* Mise en page « Marée » : en-tête sobre, bandeau d'alertes, grille 12 colonnes sur ordinateur, une colonne sur téléphone. */
+:root{
+  --bg:#FFFFFF; --fg:#0F2A3D; --muted:#4A6275; --line:#D6DEE5; --soft:#F1F5F8; --soft2:#E4EAEF;
+  --accent:#134A72; --accent-fg:#FFFFFF; --accent-hover:#0B2F4A;
+  --band:#0F2A3D; --band-fg:#FFFFFF; --band-muted:#C9D7E2;
+  --warn-bg:#FFF4E5; --warn-line:#E7B577; --warn-fg:#7A3E00;
+  --check-bg:#FFF8D6; --check-line:#D8BE45; --check-fg:#5C4A00;
+  --ph1:#C6D6DF; --ph2:#CFD6C4; --ph3:#D8D3CA; --ph4:#E6D2BF;
+  --font: "Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --step-0:1rem; --step-1:1.125rem; --step-2:1.375rem; --step-3:1.75rem; --step-4:2.25rem; --step-5:2.75rem;
+  --radius:8px; --wrap:1200px; --logo-bg:transparent;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0C1A24; --fg:#E7EEF3; --muted:#A9BBC8; --line:#24394A; --soft:#13242F; --soft2:#1A2E3B;
+  --accent:#8CC3EC; --accent-fg:#0C1A24; --accent-hover:#B5D9F4;
+  --band:#06121A; --band-fg:#FFFFFF; --band-muted:#A9BBC8;
+  --warn-bg:#2E1F0C; --warn-line:#7A5418; --warn-fg:#F4C88A;
+  --check-bg:#2A260C; --check-line:#6E6118; --check-fg:#EADB8C;
+  --ph1:#22394A; --ph2:#2A3626; --ph3:#3A342B; --ph4:#40301F; --logo-bg:#FFFFFF; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0C1A24; --fg:#E7EEF3; --muted:#A9BBC8; --line:#24394A; --soft:#13242F; --soft2:#1A2E3B;
+  --accent:#8CC3EC; --accent-fg:#0C1A24; --accent-hover:#B5D9F4;
+  --band:#06121A; --band-fg:#FFFFFF; --band-muted:#A9BBC8;
+  --warn-bg:#2E1F0C; --warn-line:#7A5418; --warn-fg:#F4C88A;
+  --check-bg:#2A260C; --check-line:#6E6118; --check-fg:#EADB8C;
+  --ph1:#22394A; --ph2:#2A3626; --ph3:#3A342B; --ph4:#40301F; --logo-bg:#FFFFFF; color-scheme:dark}
+
+*{box-sizing:border-box}
+html{color-scheme:light}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:var(--step-0);line-height:1.6;-webkit-text-size-adjust:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+a{color:var(--accent);text-underline-offset:3px}
+a:hover{color:var(--accent-hover)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:3px}
+h1,h2,h3{line-height:1.2;text-wrap:balance;margin:0}
+h1{font-size:var(--step-4);font-weight:800;letter-spacing:-.02em}
+h2{font-size:var(--step-3);font-weight:800;letter-spacing:-.01em}
+h3{font-size:var(--step-1);font-weight:700}
+p{margin:0}
+ul{margin:0;padding:0}
+.wrap{max-width:var(--wrap);margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.vh{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;left:8px;top:-60px;background:var(--accent);color:var(--accent-fg);padding:10px 14px;border-radius:6px;z-index:50;font-weight:700}
+.skip:focus{top:8px}
+.tnum{font-variant-numeric:tabular-nums}
+
+/* Bandeau maquette */
+.mock{background:var(--band);color:var(--band-fg);font-size:.8125rem}
+.mock .wrap{padding-block:7px;display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;text-align:center}
+.mock strong{font-weight:700}
+
+/* En-tête */
+header.site{border-bottom:1px solid var(--line);background:var(--bg);position:sticky;top:env(safe-area-inset-top,0px);z-index:20}
+.hrow{display:flex;align-items:center;gap:16px;padding-block:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--fg);margin-right:auto}
+.logo{width:52px;height:52px;border:1px dashed var(--muted);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.625rem;color:var(--muted);text-align:center;line-height:1.15;flex:0 0 auto}
+.logo-img{height:84px;width:auto;display:block;background:var(--logo-bg);border-radius:6px}
+.tagline{font-size:.875rem;color:var(--muted);line-height:1.3;font-style:italic}
+@media (max-width:520px){.logo-img{height:68px}.tagline{display:none}}
+.brand b{display:block;font-size:1.375rem;font-weight:800;letter-spacing:-.01em;line-height:1.1}
+.brand span{font-size:.8125rem;color:var(--muted)}
+.search{display:flex;min-width:0}
+.search input{font:inherit;font-size:.9375rem;padding:10px 12px;border:1px solid var(--muted);border-right:0;border-radius:6px 0 0 6px;width:250px;min-width:0;background:var(--bg);color:var(--fg)}
+.search button{width:46px;border:0;border-radius:0 6px 6px 0;background:var(--accent);color:var(--accent-fg);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 16px;border-radius:6px;font:inherit;font-weight:700;font-size:.9375rem;text-decoration:none;cursor:pointer;border:2px solid var(--accent);background:var(--accent);color:var(--accent-fg)}
+.btn:hover{background:var(--accent-hover);border-color:var(--accent-hover);color:var(--accent-fg)}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn.ghost:hover{background:var(--soft);color:var(--accent-hover)}
+.hdr-actions{display:flex;gap:8px}
+.menu-btn{display:none;width:46px;height:46px;border:0;border-radius:8px;background:var(--accent);color:var(--accent-fg);align-items:center;justify-content:center;cursor:pointer}
+nav.main ul{list-style:none;display:flex;gap:2px;flex-wrap:wrap}
+nav.main a{display:block;padding:12px 14px;color:var(--fg);text-decoration:none;font-weight:600;border-bottom:3px solid transparent}
+nav.main a:hover{color:var(--accent);background:var(--soft)}
+nav.main a[aria-current="page"]{border-bottom-color:var(--accent);color:var(--accent)}
+@media (max-width:860px){
+  .hdr-actions{display:none}
+  .menu-btn{display:inline-flex}
+  .search{order:5;flex:1 1 100%}
+  .search input{width:100%;flex:1}
+  nav.main{display:none;padding-bottom:10px}
+  nav.main.open{display:block}
+  nav.main ul{flex-direction:column}
+  nav.main a{border-bottom:1px solid var(--line);border-left:3px solid transparent}
+  nav.main a[aria-current="page"]{border-left-color:var(--accent);border-bottom-color:var(--line)}
+  nav.main .mobile-extra{display:block}
+}
+nav.main .mobile-extra{display:none}
+
+/* Alertes */
+.alerts{background:var(--warn-bg);border-bottom:1px solid var(--warn-line)}
+.alerts .wrap{padding-block:12px;display:flex;flex-direction:column;gap:8px}
+.alert{display:flex;gap:10px;align-items:flex-start;font-size:.9375rem;line-height:1.5}
+.tag{display:inline-block;font-size:.6875rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 7px;border-radius:4px;white-space:nowrap;line-height:1.4}
+.tag.alerte{background:var(--warn-fg);color:var(--warn-bg)}
+.tag.avis{background:var(--fg);color:var(--bg)}
+.tag.check{background:var(--check-bg);color:var(--check-fg);border:1px solid var(--check-line)}
+.tag.old{background:var(--soft2);color:var(--muted)}
+
+main{padding-bottom:64px}
+.crumbs{font-size:.875rem;color:var(--muted);padding-block:18px 0}
+.crumbs ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:6px}
+.crumbs li+li::before{content:"›";margin-right:6px;color:var(--muted)}
+.page-head{padding-block:10px 22px;display:flex;flex-direction:column;gap:10px;max-width:780px}
+.lead{font-size:var(--step-1);color:var(--muted);line-height:1.55}
+.prose{max-width:720px;display:flex;flex-direction:column;gap:14px}
+.prose ul{padding-left:1.2em;display:flex;flex-direction:column;gap:6px}
+.section{display:flex;flex-direction:column;gap:16px;padding-block:28px 0}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr))}
+.g3{grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr))}
+.g4{grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr))}
+.card{border:1px solid var(--line);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;gap:8px;background:var(--bg);min-width:0}
+.card.soft{background:var(--soft);border-color:transparent}
+.card h3 a{color:var(--fg);text-decoration:none}
+.card h3 a:hover{color:var(--accent);text-decoration:underline}
+.meta{font-size:.8125rem;color:var(--muted)}
+.check{background:var(--check-bg);border:1px dashed var(--check-line);color:var(--check-fg);border-radius:6px;padding:10px 12px;font-size:.9375rem;line-height:1.5}
+.missing{background:var(--warn-bg);border:1px dashed var(--warn-line);color:var(--warn-fg);border-radius:6px;padding:10px 12px;font-size:.9375rem;line-height:1.5}
+.tel{display:inline-flex;align-items:center;gap:6px;font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+.tel svg{flex:0 0 auto}
+.kv{display:grid;grid-template-columns:max-content 1fr;gap:6px 16px}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0}
+.table-box{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius)}
+table{border-collapse:collapse;width:100%;font-size:.9375rem;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--soft);font-weight:700}
+tr:last-child td{border-bottom:0}
+
+/* Photos */
+.ph{position:relative;margin:0;border-radius:var(--radius);overflow:hidden;background:var(--ph1);aspect-ratio:3/2;max-width:100%}
+.ph.wide{aspect-ratio:21/9}
+.ph img{width:100%;height:100%;object-fit:cover;display:block}
+.ph .phl{position:absolute;inset:auto auto 10px 10px;display:flex;gap:6px;align-items:center;font-size:.75rem;line-height:1.3;color:#0F2A3D;background:rgba(255,255,255,.88);padding:5px 8px;border-radius:5px;max-width:calc(100% - 20px)}
+.ph.empty{display:flex;align-items:center;justify-content:center}
+.ph.empty .icon{color:var(--muted);opacity:.7}
+
+/* Accueil */
+.hero{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:24px;padding-block:28px 0}
+.hero .pic{grid-column:span 8;border-radius:10px;overflow:hidden;background:var(--band);display:flex;flex-direction:column}
+.hero .pic .ph{aspect-ratio:16/9;border-radius:0}
+.hero .pic .ph img{object-position:50% 70%}
+.hero .cap{background:var(--band);color:var(--band-fg);padding:22px 28px 24px;display:flex;flex-direction:column;gap:6px}
+.hero .cap p{color:var(--band-muted);max-width:620px}
+.hero .cap h1{font-size:var(--step-5)}
+.hero aside{grid-column:span 4}
+@media (max-width:860px){.hero{grid-template-columns:1fr}.hero .pic,.hero aside{grid-column:auto}.hero .cap h1{font-size:var(--step-4)}}
+.quick{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+.quick a{display:flex;flex-direction:column;gap:10px;padding:18px 14px;border:1px solid var(--line);border-radius:10px;text-decoration:none;color:var(--fg);font-weight:700;line-height:1.3;min-height:110px;background:var(--bg)}
+.quick a:hover{border-color:var(--accent);background:var(--soft)}
+.quick svg{color:var(--accent)}
+@media (max-width:1000px){.quick{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:520px){.quick{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.two{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:32px}
+.two>.a{grid-column:span 8;min-width:0}.two>.b{grid-column:span 4;min-width:0}
+@media (max-width:860px){.two{grid-template-columns:1fr}.two>.a,.two>.b{grid-column:auto}}
+.news-item{display:flex;gap:16px;padding-block:16px;border-top:1px solid var(--line)}
+.news-item:last-child{border-bottom:1px solid var(--line)}
+.news-item .thumb{flex:0 0 120px;height:84px;border-radius:6px;background:var(--soft2);display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.news-item h3 a{color:var(--fg);text-decoration:none}.news-item h3 a:hover{color:var(--accent);text-decoration:underline}
+@media (max-width:520px){.news-item .thumb{display:none}}
+.ev{display:flex;gap:14px;align-items:flex-start}
+.date{flex:0 0 60px;text-align:center;border:2px solid var(--accent);border-radius:8px;padding:6px 0;line-height:1.05;color:var(--fg)}
+.date b{display:block;font-size:1.25rem;font-weight:800}
+.date span{font-size:.6875rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+.ev.past{opacity:.55}
+.head-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.disc a{text-decoration:none;color:var(--fg);display:flex;flex-direction:column;gap:8px}
+.disc a:hover h3{color:var(--accent);text-decoration:underline}
+.disc p{color:var(--muted);font-size:.9375rem}
+
+/* Hubs */
+.hub a.card{text-decoration:none;color:var(--fg)}
+.hub a.card:hover{border-color:var(--accent);background:var(--soft)}
+.hub a.card h3{color:var(--accent)}
+
+/* Filtres */
+.filters{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:inherit;font-size:.875rem;font-weight:600;padding:8px 14px;min-height:40px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.chip .n{font-weight:500;opacity:.8;margin-left:4px}
+.dir-card .cat{font-size:.75rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.dir-tools{display:flex;flex-direction:column;gap:12px}
+.dir-tools input{font:inherit;padding:10px 12px;border:1px solid var(--muted);border-radius:6px;max-width:360px;width:100%;background:var(--bg);color:var(--fg)}
+.count{font-size:.875rem;color:var(--muted)}
+
+details{border:1px solid var(--line);border-radius:var(--radius);background:var(--bg)}
+details+details{margin-top:10px}
+summary{cursor:pointer;padding:14px 16px;font-weight:700;font-size:var(--step-1);list-style:none;display:flex;justify-content:space-between;gap:12px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-size:1.4rem;color:var(--accent);line-height:1}
+details[open] summary::after{content:"–"}
+details .in{padding:0 16px 16px;display:flex;flex-direction:column;gap:10px;max-width:760px}
+details .in ul{padding-left:1.2em}
+
+form.contact{display:grid;gap:14px;max-width:640px}
+form.contact .row{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr));gap:14px}
+form.contact label{display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:.9375rem}
+form.contact input,form.contact textarea{font:inherit;font-weight:400;padding:10px 12px;border:1px solid var(--muted);border-radius:6px;background:var(--bg);color:var(--fg);width:100%}
+form.contact .consent{flex-direction:row;align-items:flex-start;gap:10px;font-weight:400}
+form.contact .consent input{width:20px;height:20px;margin-top:3px;flex:0 0 auto}
+.ok{background:var(--soft);border-left:0;border:1px solid var(--line);border-radius:6px;padding:12px 14px}
+
+.results li{list-style:none;padding-block:14px;border-top:1px solid var(--line)}
+.results li:last-child{border-bottom:1px solid var(--line)}
+
+footer.site{background:var(--band);color:var(--band-muted);margin-top:24px}
+footer.site .wrap{padding-block:40px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:28px;font-size:.9375rem;line-height:1.6}
+footer.site a{color:var(--band-fg)}
+footer.site b{color:var(--band-fg);font-size:1.0625rem}
+footer.site ul{list-style:none;display:flex;flex-direction:column;gap:4px}
+.label-ph{display:inline-block;border:1px dashed var(--band-muted);border-radius:6px;padding:8px 12px;font-size:.8125rem}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+
+</head>
+<body>
+<a class="skip" href="#contenu">Aller au contenu</a>
+<div class="mock" role="note"><div class="wrap"><span><strong>Maquette de proposition, non officielle.</strong> Contenus repris de ville-creances.fr le 25/10/2026. Le formulaire de contact n'envoie rien. Site sans lien avec la mairie.</span></div></div>
+
+<header class="site">
+  <div class="wrap">
+    <div class="hrow">
+      <a class="brand" href="#accueil" data-go="accueil">
+        <img class="logo-img" src="img/logo-creances.png" width="359" height="209" alt="Créances, retour à l'accueil">
+        <span class="tagline">terre d'accueil<br>où il fait bon vivre</span>
+      </a>
+      <form class="search" role="search" id="searchForm">
+        <label class="vh" for="q">Rechercher dans le site</label>
+        <input id="q" type="search" placeholder="Une démarche, une salle, un horaire…" autocomplete="off">
+        <button type="submit" aria-label="Lancer la recherche"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button>
+      </form>
+      <div class="hdr-actions">
+        <a class="btn ghost" href="#demarches" data-go="demarches">Démarches</a>
+        <a class="btn" href="#contact" data-go="contact">Contacter la mairie</a>
+      </div>
+      <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="mainNav" aria-label="Ouvrir le menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    </div>
+    <nav class="main" id="mainNav" aria-label="Menu principal">
+      <ul>
+        <li><a href="#mairie" data-go="mairie" data-sec="mairie">Mairie</a></li>
+        <li><a href="#vivre" data-go="vivre" data-sec="vivre">Vivre à Créances</a></li>
+        <li><a href="#enfance" data-go="enfance" data-sec="enfance">Enfance et jeunesse</a></li>
+        <li><a href="#loisirs" data-go="loisirs" data-sec="loisirs">Loisirs et tourisme</a></li>
+        <li><a href="#economie" data-go="economie" data-sec="economie">Économie</a></li>
+        <li><a href="#actualites" data-go="actualites" data-sec="actualites">Actualités</a></li>
+        <li class="mobile-extra"><a href="#demarches" data-go="demarches">Démarches</a></li>
+        <li class="mobile-extra"><a href="#contact" data-go="contact">Contacter la mairie</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<div id="alerts"></div>
+<main id="contenu" tabindex="-1"></main>
+
+<footer class="site">
+  <div class="wrap">
+    <div><img src="img/logo-creances.png" width="359" height="209" alt="" style="height:72px;width:auto;background:#FFFFFF;border-radius:8px;padding:6px;margin-bottom:12px;display:block"><b>Mairie de Créances</b><p>107 rue des écoles<br>50710 Créances</p><p class="tnum">Tél. 02.33.46.30.18<br>Fax 02.33.46.54.95</p><p class="tnum">Lundi au jeudi : 8 h 30 – 12 h, 13 h 30 – 17 h 30<br>Vendredi : 8 h 30 – 12 h, 13 h 30 – 17 h</p><p><a href="mailto:accueil@ville-creances.fr">accueil@ville-creances.fr</a></p></div>
+    <div style="display:flex;flex-direction:column;gap:10px;align-items:flex-start"><span class="label-ph">Label « Ville fleurie 3 fleurs » : visuel officiel à fournir</span><a href="https://fr-fr.facebook.com/Mairie-de-Cr%C3%A9ances-906925719421086/" rel="noopener">Page Facebook de la mairie</a></div>
+    <nav aria-label="Pied de page"><ul>
+      <li><a href="#mentions" data-go="mentions">Mentions légales</a></li>
+      <li><a href="#confidentialite" data-go="confidentialite">Politique de confidentialité</a></li>
+      <li><a href="#cookies" data-go="cookies">Gestion des cookies</a></li>
+      <li><a href="#plan" data-go="plan">Plan du site</a></li>
+      <li><a href="#contact" data-go="contact">Contact</a></li>
+    </ul></nav>
+  </div>
+</footer>
+
+<script>
+(function(){
+"use strict";
+const TODAY = new Date();
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ---------- Icônes ---------- */
+const I = {
+  phone:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>',
+  doc:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/></svg>',
+  clock:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  cross:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 8v8M8 12h8"/></svg>',
+  tent:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 20 12 5l9 15z"/><path d="M12 5v15M9 20l3-5 3 5"/></svg>',
+  bin:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h16l-1.5 13h-13zM9 7V4h6v3"/></svg>',
+  bowl:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 11h16a8 8 0 0 1-16 0zM9 7c0-2 2-2 2-4M14 7c0-2 2-2 2-4"/></svg>',
+  photo:'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="m21 17-5-5-8 7"/></svg>',
+  file:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/></svg>'
+};
+
+/* ---------- Photos (fichiers repris du site actuel) ---------- */
+const PHOTOS = {
+  mairie:{file:"DSC_0132.jpg", alt:"La mairie de Créances, façade fleurie et drapeaux", src:""},
+  bourg:{file:"DSC_0091.jpg", alt:"Rue du bourg de Créances bordée de lavandes, avec l'église", src:""},
+  camping:{file:"jeux-camping-1.jpg", alt:"Aire de jeux ombragée du camping", src:""},
+  poste:{file:"service1.jpg", alt:"Bureau de poste de Créances aux fenêtres fleuries", src:""},
+  dunes:{file:"DSC_0086-1.jpg", alt:"Sentier entre les dunes de Créances, ganivelles et oyats", src:""},
+  plage:{file:"ville_de_creances_plage_bandeau.jpg", alt:"La plage de Créances à marée basse en été", src:""},
+  eglise:{file:"ville_de_creances_eglise_bandeau.jpg", alt:"L'église de Créances et ses massifs fleuris", src:""},
+  fleurs:{file:"ville_de_creances_fleurs_eglise_bandeau.jpg", alt:"Jardin fleuri près de l'église, bancs et maisons en pierre", src:""},
+  lande:{file:"ville_de_creances_La_Lande_de_Creances.jpg", alt:"Pins et sous-bois de la lande de Créances", src:""},
+  ecole:{file:"ecole-publique.jpg", alt:"L'école publique de Créances", src:""},
+  salle:{file:"ville-creances-salle-communale-02.jpg", alt:"Façade de l'espace intergénérationnel et son parking", src:""},
+  airejeux:{file:"complexe-multi-train-gare.jpg", alt:"Jeu en forme de train et de gare, aire de jeux rue des Écoles", src:""}
+};
+const WIDTHS = {"mairie":[640,1280,1920],"bourg":[640,1280,1920],"camping":[640,1280,1920],"poste":[640,1280,1920],"dunes":[640,1280,1920],"plage":[640,1280,1680],"eglise":[640,1280,1680],"fleurs":[640,1280,1680],"lande":[640,1280,1400],"ecole":[640,1280,1920],"salle":[640,1280,1632],"airejeux":[640,1280,1632]};
+Object.keys(WIDTHS).forEach(k=>{ PHOTOS[k].src = `img/${k}-1280.webp`; PHOTOS[k].srcset = WIDTHS[k].map(w=>`img/${k}-${w}.webp ${w}w`).join(", "); });
+function photo(key, cls){
+  const p = PHOTOS[key]; cls = cls||"";
+  const sizes = cls.includes("big") ? "(max-width: 860px) 100vw, 800px" : (cls.includes("wide") ? "(max-width: 860px) 100vw, 780px" : "(max-width: 600px) 100vw, 400px");
+  if(p && p.src) return `<figure class="ph ${cls}"><img src="${p.src}" srcset="${p.srcset}" sizes="${sizes}" alt="${esc(p.alt)}" ${cls.includes("big")?'fetchpriority="high"':'loading="lazy"'} decoding="async"></figure>`;
+  const label = p ? `Photo à intégrer : ${esc(p.file)}` : "Photo à demander à la mairie";
+  return `<figure class="ph empty ${cls}" role="img" aria-label="${p?esc(p.alt):"Emplacement photo"}"><span class="icon">${I.photo}</span><span class="phl">${label}</span></figure>`;
+}
+
+/* ---------- Petits composants ---------- */
+const tel = (n) => `<a class="tel" href="tel:${n.replace(/[^\d+]/g,"")}">${I.phone}${esc(n)}</a>`;
+const ext = (href, txt) => `<a href="${href}" rel="noopener">${txt}</a>`;
+const HORAIRES = `<dl class="kv tnum" style="font-size:.9375rem"><dt>Lundi au jeudi</dt><dd>8 h 30 – 12 h 00<br>13 h 30 – 17 h 30</dd><dt>Vendredi</dt><dd>8 h 30 – 12 h 00<br>13 h 30 – 17 h 00</dd></dl>`;
+const verif = (txt) => `<p class="check"><span class="tag check">À vérifier</span> ${txt}</p>`;
+const manque = (txt) => `<p class="missing"><strong>À compléter par la mairie :</strong> ${txt}</p>`;
+const updated = (d) => `<p class="meta">Contenu repris du site actuel, dernière modification : ${d}</p>`;
+const MONTHS = ["janv.","févr.","mars","avr.","mai","juin","juil.","août","sept.","oct.","nov.","déc."];
+const MONTHS_L = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
+const fmt = (iso) => { const d = new Date(iso+"T12:00:00"); return `${d.getDate()===1?"1er":d.getDate()} ${MONTHS_L[d.getMonth()]} ${d.getFullYear()}`; };
+
+/* ---------- Données ---------- */
+const ALERTS = [
+  {kind:"alerte", label:"Alerte", html:`<strong>Coupure d'eau</strong> (publié le 8 octobre 2026) : incident sur le réseau rue de la Moignerie, secteurs alentour concernés. La SAUR intervient. ${ext("https://ville-creances.fr/2026/10/08/coupure-deau/","Lire l'avis")}`},
+  {kind:"avis", label:"Avis", html:`<strong>Cimetière du Bourg</strong> : deuxième constat d'état d'abandon des concessions le 3 novembre 2026 à 14 heures. <a href="#actualites" data-go="actualites">Voir l'actualité</a>`}
+];
+
+const NEWS = [
+  {d:"2026-10-08", t:"Coupure d'eau", x:"Suite à un incident sur le réseau d'eau situé rue de la Moignerie, une coupure d'eau est en cours. Les secteurs aux alentours sont également concernés. La SAUR intervient afin de rétablir la situation dans les meilleurs délais.", u:"https://ville-creances.fr/2026/10/08/coupure-deau/"},
+  {d:"2026-10-01", t:"Nettoyage du cimetière du bourg", x:"Samedi 17 octobre 2026 de 9 h à 12 h, rendez-vous sur le parking du cimetière avec vos outils. Cette action sera suivie du partage d'un verre de l'amitié avec les participants.", u:"https://ville-creances.fr/2026/10/01/reunion-dinformation-avec-manche-fibre/"},
+  {d:"2026-09-29", t:"Procédure de reprise de concessions en état d'abandon dans le cimetière du Bourg", x:"Le deuxième constat d'état d'abandon aura lieu le 3 novembre 2026 à 14 heures en présence de M. Philippe MAQUIN et M. Alain NAVARRE, adjoints en charge de cette opération.", u:"https://ville-creances.fr/2026/09/29/procedure-de-reprise-de-concessions-en-etat-dabandon-dans-le-cimetiere-du-bourg/"},
+  {d:"2026-08-21", t:"Dérogation de l'arrêté n° 2026-DDTM-SE-149 pour les agriculteurs", x:"En période de crise sécheresse, les services de l'État proposent de demander une dérogation à l'arrêté prescrivant des restrictions, pour l'abreuvement des animaux.", u:"https://ville-creances.fr/2026/08/21/derogation-de-larrete-n2026-ddtm-se-149-pour-les-agriculteurs/"},
+  {d:"2026-06-09", t:"Lancement de la campagne de sécurité des loisirs nautiques et de la plaisance 2026", x:"Du 1er mai au 30 septembre 2026, la Préfecture maritime de la Manche et de la mer du Nord organise une campagne de sécurité des loisirs nautiques et de la plaisance.", u:"https://ville-creances.fr/2026/06/09/lancement-de-la-campagne-de-securite-des-loisirs-nautiques-et-de-la-plaisance-2026/"},
+  {d:"2026-05-12", t:"Nouveau dans votre commune : PanneauPocket", x:"La commune met en place l'application PanneauPocket pour vous informer de l'actualité : évènements et animations, informations importantes, alertes. Gratuite et sans publicité.", u:"https://ville-creances.fr/2026/05/12/nouveau-dans-votre-commune-panneaupocket/"},
+  {d:"2025-08-05", t:"France Rénov'", x:"Besoin d'améliorer votre logement ? Contactez l'Espace Conseil France Rénov' : conseil gratuit, indépendant et personnalisé.", u:"https://ville-creances.fr/2025/08/05/france-renov/"},
+  {d:"2025-08-05", t:"Plantez des haies", x:"Affiche d'information (document scanné).", u:"https://ville-creances.fr/2025/08/05/plantez-des-haies/"},
+  {d:"2025-07-04", t:"Rénovation énergétique des bâtiments communaux", x:"Document d'information (scanné).", u:"https://ville-creances.fr/2025/07/04/renovation-energetique-des-batiments-communaux/"},
+  {d:"2025-06-20", t:"Feux de forêt et de végétation", x:"9 feux de forêt sur 10 sont d'origine humaine et pourraient être évités en adoptant les bons réflexes.", u:"https://ville-creances.fr/2025/06/20/feux-de-foret-et-de-vegetation/"},
+  {d:"2024-12-19", t:"Ouvertures commerciales (fibre)", x:"Pour se raccorder à la fibre optique, souscrire un abonnement auprès d'un fournisseur d'accès présent sur le réseau ; un technicien effectuera le raccordement.", u:"https://ville-creances.fr/2024/12/19/ouvertures-commerciales/"},
+  {d:"2024-03-08", t:"La forêt communale : que se passe-t-il dans cette forêt ?", x:"Document d'information (scanné).", u:"https://ville-creances.fr/2024/03/08/la-foret-communale-que-se-passe-t-il-dans-cette-foret/"},
+  {d:"2023-04-19", t:"Message important (démarchage frauduleux)", x:"Visuel d'information.", u:"https://ville-creances.fr/2023/04/19/message-important/"},
+  {d:"2023-03-01", t:"La fibre est disponible à Créances !", x:"Voir la page dédiée à la fibre.", u:"https://ville-creances.fr/2023/03/01/la-fibre-est-disponible-a-creances/"},
+  {d:"2023-03-01", t:"Nouvelle obligation déclarative pour les propriétaires", x:"La taxe d'habitation sur les résidences principales est supprimée dès 2023.", u:"https://ville-creances.fr/2023/03/01/nouvelle-obligation-declarative-pour-les-proprietaires/"},
+  {d:"2023-02-28", t:"Vente de composteur", x:"Réservation auprès du service Déchets de la Communauté de Communes Côte Ouest Centre Manche : dechets@cocm.fr ou 02.33.45.50.50.", u:"https://ville-creances.fr/2023/02/28/vente-de-composteur/"},
+  {d:"2022-09-16", t:"Décla Loc Cerfa", x:"Nouvel outil pour déclarer votre chambre d'hôtes ou meublé de tourisme : declaloc.fr.", u:"https://ville-creances.fr/2022/09/16/decla-loc-cerfa/"},
+  {d:"2022-01-25", t:"Un accompagnement et des aides financières pour vos travaux", x:"Document d'information (scanné).", u:"https://ville-creances.fr/2022/01/25/un-accompagnement-et-des-aides-financieres-pour-vos-travaux/"},
+  {d:"2020-11-16", t:"Journée du Citoyen : vous avez 16 ans ? Pensez à vous faire recenser en mairie", x:"Voir la démarche « Recensement citoyen ».", u:"https://ville-creances.fr/2020/11/16/journee-du-citoyen-vous-avez-16-ans-pensez-a-vous-faire-recenser-en-mairie/"},
+  {d:"2020-05-26", t:"Créances classée parmi les 14 petites villes les plus charmantes de Normandie", x:"", u:"https://ville-creances.fr/2020/05/26/creances-classee-parmi-les-14-petites-villes-les-plus-charmantes-de-normandie/"},
+  {d:"2017-03-31", t:"Menus de la cantine", x:"Les menus de la cantine sont accessibles sur la page Restaurant scolaire.", u:"https://ville-creances.fr/2017/03/31/menus-de-cantine/"},
+  {d:"2017-02-28", t:"Les manifestations", x:"Consultez la page des manifestations.", u:"https://ville-creances.fr/2017/02/28/les-manifestations/"}
+];
+
+/* Calendrier des fêtes 2026 (page Manifestations) */
+const AGENDA = [
+ ["2026-01-10","18 h","Vœux du Maire","Espace intergénérationnel"],
+ ["2026-01-17","20 h","Loto de l'association de la Fête de la carotte","Espace intergénérationnel"],
+ ["2026-01-28","14 h","Loto du Club des Aînés","Espace intergénérationnel"],
+ ["2026-01-31","20 h","Repas de l'association Butterfly","Espace intergénérationnel"],
+ ["2026-02-08","12 h 30","Repas du Club des Aînés","Espace intergénérationnel"],
+ ["2026-02-14","10 h – 18 h","Vente solidaire, la Normandie au Désert","Salle Multi-activités"],
+ ["2026-02-14","20 h","Repas TEAM NEEL Compétition","Espace intergénérationnel"],
+ ["2026-02-20","20 h","Loto de l'APEL école Notre-Dame","Espace culturel de Lessay"],
+ ["2026-02-21","14 h","Loto de l'APEL école Notre-Dame","Espace culturel de Lessay"],
+ ["2026-02-22","11 h","Assemblée générale de l'APPPCO suivie d'un repas ouvert au public","Espace intergénérationnel"],
+ ["2026-02-28","","Repas de l'association de la chasse de Créances",""],
+ ["2026-03-15","","Élections municipales (1er tour)",""],
+ ["2026-03-22","","Élections municipales (2e tour)",""],
+ ["2026-03-00","15 h – 19 h","Collecte de sang (le site indique « mardi », sans date)","Salle Multi-activités"],
+ ["2026-03-26","13 h 30","Concours de pétanque Vétérans en doublette, Créances Sports Pétanque",""],
+ ["2026-03-28","20 h","Repas Créances Sports Football","Espace intergénérationnel"],
+ ["2026-03-29","12 h 30","Repas Créances son Histoire et son Patrimoine","Salle paroissiale"],
+ ["2026-04-10","19 h 30","Assemblée générale du Don du Sang","Salle Multi-activités"],
+ ["2026-04-11","20 h","Loto de la SAEL école « 123 Soleil »","Gouville-sur-Mer"],
+ ["2026-04-12","14 h","Loto de la SAEL école « 123 Soleil »","Gouville-sur-Mer"],
+ ["2026-04-15","","Loto du Comité des Fêtes","Espace intergénérationnel"],
+ ["2026-04-26","12 h 30","Méchoui UNC – Anciens combattants","Espace intergénérationnel"],
+ ["2026-05-08","","Cérémonie commémorative des Anciens combattants","Monuments aux morts"],
+ ["2026-05-25","13 h 30","Challenge Maurice CARON, Créances Sports Pétanque",""],
+ ["2026-05-30","","Soirée chants, Familles Rurales","Espace intergénérationnel"],
+ ["2026-05-31","","Représentation de danse des enfants, Familles Rurales","Espace intergénérationnel"],
+ ["2026-06-07","12 h 30","Méchoui du Club des Aînés","Espace intergénérationnel"],
+ ["2026-06-09","15 h – 19 h","Collecte de sang","Salle Multi-activités"],
+ ["2026-06-13","10 h – 18 h","Vente solidaire avec restauration, la Normandie au Désert","Salle Multi-activités"],
+ ["2026-06-19","16 h 30","Kermesse de l'école Notre-Dame","Salle paroissiale"],
+ ["2026-06-19","18 h","Kermesse de l'école « 123 Soleil » (SAEL)","Cour de l'école élémentaire"],
+ ["2026-06-23","13 h 30","Concours de pétanque Vétérans en doublette",""],
+ ["2026-06-28","10 h","Rassemblement de véhicules de collection, Comité des Fêtes","Parking de la place de la Fraternité"],
+ ["2026-07-04","","Fête de la moto avec feu d'artifice, Créances Sports","Parking de la plage"],
+ ["2026-07-17","17 h – 20 h","Marché du terroir","Parking de la plage"],
+ ["2026-07-23","13 h 30","Concours de pétanque Vétérans en doublette",""],
+ ["2026-07-24","19 h","Apéro concert et restauration, les Amis du Buisson",""],
+ ["2026-07-26","","Fête « Sainte Anne » au Buisson, messe en plein air et repas sous chapiteau","Le Buisson"],
+ ["2026-08-02","12 h 30","Méchoui de l'association « Sainte Marie Madeleine Postel »","Salle paroissiale"],
+ ["2026-08-08","","Fête de la Carotte avec feu d'artifice",""],
+ ["2026-08-11","11 h 30","Concours de pétanque Vétérans en doublette",""],
+ ["2026-08-14","17 h – 20 h","Marché du terroir","Parking de la plage"],
+ ["2026-09-23","14 h","Loto du Club des Aînés","Espace intergénérationnel"],
+ ["2026-09-29","15 h – 19 h","Collecte de sang","Salle Multi-activités"],
+ ["2026-10-03","20 h","Loto de l'association cycliste Fernand Durel de Gavray","Espace intergénérationnel"],
+ ["2026-10-10","20 h","Bal Country, Land's Country Dancers","Espace intergénérationnel"],
+ ["2026-10-18","12 h 30","Repas de l'Amitiés des Créançais d'Aotefeis","Espace intergénérationnel"],
+ ["2026-11-07","","Pièce de théâtre, Familles Rurales (samedi 7 et dimanche 8)","Espace intergénérationnel"],
+ ["2026-11-11","","Cérémonie des Anciens Combattants","Monuments aux morts"],
+ ["2026-11-14","","Salon du Bien-être, la Normandie au Désert","Espace intergénérationnel"],
+ ["2026-11-18","14 h 30","Loto de l'Amitiés des Créançais",""],
+ ["2026-11-21","20 h","Loto de la SAEL école « 123 Soleil »","Espace intergénérationnel"],
+ ["2026-11-22","14 h 30","Loto de la SAEL école « 123 Soleil »","Espace intergénérationnel"],
+ ["2026-11-25","14 h","Loto de l'Union des Anciens Combattants (le site indique « dimanche 25 »)","Espace intergénérationnel"],
+ ["2026-12-01","15 h – 19 h","Collecte de sang","Salle Multi-activités"],
+ ["2026-12-05","10 h – 18 h","Marché de Noël, la Normandie au Désert","Salle Multi-activités"],
+ ["2026-12-06","12 h 30","Repas des Anciens organisé par la Commune","Espace intergénérationnel"],
+ ["2026-12-10","12 h 30","Repas de Noël du Club des Aînés","Espace intergénérationnel"],
+ ["2026-12-12","","Marché de Noël et spectacle, SAEL école « 123 Soleil »","Espace intergénérationnel"]
+].map(([d,h,t,l])=>({d,h,t,l}));
+
+const ARTISANS = [
+ ["Maçonnerie, carrelage","CORON MATHIEU","Maçonnerie, carrelage, constructions en tout genre",["02.33.17.25.92"]],
+ ["Conditionnement de légumes","JARDINS DE CRÉANCES","Contact : LHOUTELLIER Régis",["02.33.76.75.00"]],
+ ["Conditionnement de légumes","AGRIAL PRIMCO","",["02.33.76.30.30"]],
+ ["Couverture","SARL Thierry NAVARRE","Couverture",["02.33.46.31.21"]],
+ ["Ramonage","Créances Ramonage service","Ramonage cheminées, inserts, poêles à bois et à granulés ; entretien, vente et installation ; démoussage toiture et façade. Mikaël GUILLOTTE",["06.89.37.61.51"]],
+ ["Transports","Ambulances LENEVEU","Leneveu Franck",["02.33.46.40.74"]],
+ ["Matériaux, travaux","Thomas et Fils SARL","",["02.33.47.25.19"]],
+ ["Matériaux, travaux","ETAR","ANGE Dimitri",["02.33.46.60.02"]],
+ ["Négociants","SARL CAVEY","Cavey Christophe",["02.33.07.88.89"]],
+ ["Négociants","ETS VASTEL","",["02.33.46.44.31"]],
+ ["Négociants","Négoce produits du sol","Laurent Jean-Luc",["02.33.46.69.83"]],
+ ["Bâtiment","LAVARDE DIDIER","Entreprise générale de bâtiment",["02.33.07.04.54"]],
+ ["Menuiserie, ébénisterie","MCO – Menuiserie de la Côte Ouest","VIEVAL Cécile",["02.33.76.65.35"],"https://www.menuiserie-coteouest.com/"],
+ ["Menuiserie, ébénisterie","La Créançaise – Menuiserie Arnaud VILLEDIEU","",["02.33.07.87.06","06.45.93.92.94"]],
+ ["Irrigation","SARL PERDREAU","HEBERT Mickaël",["02.33.46.41.44"]],
+ ["Irrigation","Créances IRRIGATION","Couillard Bertrand",["02.33.47.93.27"]],
+ ["Couturière","Coutures & Créations","Mme Colette MASURIER",["06.60.53.93.35"]],
+ ["Bien-être","Réflexologie plantaire chinoise & dimensionnelle","Virginie VARNIERE",["06.32.36.05.36"],"https://bulle-en-soi.fr/"]
+].map(([c,n,d,p,w])=>({type:"Artisan",c,n,d,p,w}));
+const COMMERCES = [
+ ["Bars, restaurants","LES MIELLES","Bar, crêperie",["02.33.07.06.30"]],
+ ["Bars, restaurants","LE LONGCHAMP","Bar tabac PMU",["02.33.17.07.87"]],
+ ["Bars, restaurants","L'AUTHENTIQUE","18 place de la liberté",["02.33.47.07.10","06.74.25.53.60"]],
+ ["Banques","CRÉDIT MUTUEL","",["0.820.320.894"]],
+ ["Banques","CRÉDIT AGRICOLE NORMANDIE","",["0.825.840.328"]],
+ ["Boulangeries, pâtisseries","BOULANGERIE LECOUILLARD","Lecouillard Jean-Yves",["02.33.46.32.12"]],
+ ["Boulangeries, pâtisseries","BOULANGERIE VIARD","Viard Frédéric",["02.33.46.30.01"]],
+ ["Boucherie, charcuterie","Boucherie LEMONNIER","",["02.33.07.24.01"]],
+ ["Fleuriste","L'ATELIER DES FÉES","",["02.33.45.60.64","06.36.63.30.78"]],
+ ["Bricolage, jardinerie","MAISON.FR","Bricolage, jardinerie, paysagiste",["02.33.46.32.76"]],
+ ["Coiffure","LC COIFFURE","",["02.33.46.31.20"]],
+ ["Coiffure","KARINE ET MAUDE","",["02.33.76.24.41"]],
+ ["Coiffure","SO'SWAG COIFFURE","",["02.33.45.58.80"]],
+ ["Auto-école","Auto-école Agnès DOUCHIN","",[]],
+ ["Pizzas, crêpes","LUIGI'S PIZZA","Ambulant",["06.08.90.76.22"]],
+ ["Pizzas, crêpes","CRÊPES, GALETTES À GOGO","Ambulant",["06.75.94.83.37"]],
+ ["Pharmacie","Pharmacie LAUNAY","M. et Mme LAUNAY",["02.33.46.30.21"]],
+ ["Hébergement","L'escale dans les dunes","Hôtel, gîtes, chambres d'hôtes",["02.33.45.90.25"]],
+ ["Hébergement","Village les Dunes","Gîtes communautaires",["02.33.56.28.80"]],
+ ["Station de lavage","L'EXPRESSO CRÉANCES","270 rue du haut Chemin",[]]
+].map(([c,n,d,p,w])=>({type:"Commerce",c,n,d,p,w}));
+
+const ASSOS = [
+ {c:"Mémoire", n:"Union Nationale des Combattants de Créances", d:"Perpétue le souvenir des camarades disparus lors des dernières guerres (14-18, 39-45, Indochine, TOE, AFN, OPEX). 4 porte-drapeaux participent aux commémorations (11 novembre, 8 mai, 5 décembre) et au rassemblement devant la Stèle, rue des Salines. 102 adhérents.", p:[["Stéphane LENOIR","06.80.08.68.08"],["Yves LESIGNE","06.76.31.32.49"]]},
+ {c:"Solidarité", n:"Amitiés des Créançais d'Aotefeis", d:"Organise une animation par mois à la maison de retraite, avec des artistes, et offre le goûter aux résidents. Une quinzaine de membres ; financement par lotos, théâtre et repas dansants.", p:[["Michel TRAVERS, président","02 33 47 31 26"]]},
+ {c:"Sport", n:"Association Minh Long", d:"Arts martiaux traditionnels vietnamiens (Vo Co Truyen), dès 5 ans. Premier cours gratuit, certificat médical obligatoire. Salle Multi-activités, 126 rue du Vivier : lundi 18 h 30–19 h 30 (enfants) ; mardi, jeudi, vendredi 18 h 30–20 h ; vendredi 20 h–21 h (respiration) ; samedi 11 h–12 h 30.", p:[["Patrick GIROT","06.20.40.82.26"]]},
+ {c:"Culture", n:"Association Fais ton animation", d:"Éveiller la curiosité pour le cinéma d'animation, valoriser les savoir-faire créatifs et développer la production de films d'animation en Normandie.", p:[["Frédéric LE BOISSELIER","06.71.91.64.40"]], m:"fredlb@gmx.fr"},
+ {c:"Aînés", n:"Club des Aînés de Créances", d:"Créé en 1977. Pour les retraités et pré-retraités. Inscriptions du 1er jeudi de septembre au 31 octobre ; cotisation annuelle 18 €. Réunions les 1er et 3e jeudis du mois à 14 h, espace intergénérationnel (pas en juillet-août) : jeux, goûter, sorties, voyages, repas dansants.", p:[["Jacqueline ROPTIN, présidente","06.72.08.40.44"]]}
+];
+
+const CR = [["2024-05-21","0051363014218f2cd81a7"],["2023-12-05","00513630183056a28f470"],["2023-11-21","0051363011f1d5f1b954a"],["2023-07-26","005136301bb3b74410ed2"],["2023-06-09","0051363017f6e0ab49c33"],["2023-05-09","005136301f13c9c047381"],["2023-02-28","0051363012cca60287b7b"],["2023-01-19","00513630172be63126419"],["2022-12-08","005136301481425b04a21"],["2022-11-14","0051363012cfa8cd0a6e0"],["2022-09-28","005136301182624daabde"],["2022-06-15","005136301235f9f4e5117"],["2022-05-19","005136301cdf75cdeb0ab"],["2022-04-05","0051363012ebb53f4f3de"],["2022-04-00","005136301e253a7cc80ee","Note de présentation synthétique du budget primitif 2022"],["2022-02-28","005136301105b20221a65"],["2022-01-26","00513630142c219d87577"],["2021-12-02","005136301cdb277f880d1"],["2021-11-08","00513630153d833d4186a"],["2021-03-15","0054379103ae1754e9f46"],["2021-02-01","005437910f92c9588ebe1"],["2020-12-10","005437910c54a523158ef"],["2020-11-09","005437910f4cafffc4c23"],["2020-08-31","005437910612afdc0a2bc"],["2020-07-06","005437910772ca47d5d30"],["2020-05-26","0054379105ef173442acd"],["2020-05-11","00543791068d4f13b6e39"],["2020-05-11","0054379102c8d69498826","Note synthétique de présentation du budget 2020"],["2020-03-11","0054379102f43643b6302"],["2020-02-10","005437910cc50adbf6d83"],["2020-01-10","005437910d7c45743129c"],["2019-12-09","00543791095b6143cead9"],["2019-10-17","005437910669dc0c9ebde"],["2019-07-29","005437910ab0edde93722"],["2019-05-22","005437910934a4e9e35df"],["2019-04-05","005437910934a4e9e35df","Extrait du Conseil Municipal du 5 avril 2019 (même lien que le 22 mai 2019 : à vérifier)"],["2019-02-25","00543791026ee46a79612"],["2019-01-08","005437910908740e0e9ec"],["2018-11-22","00543791059f96f9fcd65"],["2018-10-10","005437910e5eb2fe326d0"],["2018-09-12","005437910b48aee6a7165"],["2018-07-24","005437910fb43f5a368d8"],["2018-05-18","0054379102ba620f8843f"],["2018-04-04","005437910de44cee71801"],["2018-02-21","005437910c836304c51e6"],["2018-01-15","0054379104714627650b2"],["2017-11-21","0054379100514ed4afc22"],["2017-10-17","0054379107b179290bf7e"],["2017-09-26","0054379109025628a01c2"],["2017-05-17","005136301b985aa0c08e9"],["2017-03-27","00513630135cbadaa98f6"]];
+
+const BULLETINS = [["janvier 2025","00513630172b645ed1289"],["janvier 2024","005136301fde9ea7aaa5c"],["juillet 2023","0051363010c1e76f465d6"],["janvier 2023","005136301b53d1b2fcb02"],["janvier 2022","0051363012e5d99fc5df7"],["juillet 2021","00513630112dc81299c71"],["décembre 2020","005136301b14700567f51"],["juillet 2020","0054379106e6e28095c52"],["juillet 2019","0054379109f7571cc336d"],["janvier 2019","005437910260a86fa00e0"],["juillet 2018","00543791096008b2e1a1f"],["janvier 2018","005437910e461ddcfd6e6"]];
+
+const U = "https://ville-creances.fr/wp-content/uploads/";
+const PLU = [
+ ["Enquête publique (2017)",[["1 – Rapport de l'enquête publique, 28/04/2017","2017/10/1-Rapport-Enquete-Publique-PLU-Cr%C3%A9ances-28-04-2017.pdf"],["2 – Annexes, documents joints au rapport","2017/10/2-Annexes-doc-joints-rapport-EP-PLU-Creances-28-04-2017.pdf"],["Affichage de l'avis d'enquête publique","2017/03/Avis_AfficheA2.pdf"],["Avis d'enquête publique","2017/03/ville-creances-Avis_texte_Enquete-publique_PLU-Creances-VF.pdf"],["Dossier d'enquête publique","2017/03/DossierEnquetePublique_VF.pdf"]]],
+ ["Délibération",[["Délibération : arrêt du projet et bilan de la concertation","2017/03/DelibArret_BilanConcertation_Commune-de-Cr%C3%A9ances.pdf"]]],
+ ["Pièces du PLU",[["1. Rapport de présentation","2017/02/1_Rapport-de-presentation_PLU_Creances_Arret.pdf"],["2. Projet d'aménagement et de développement durables (PADD)","2017/02/2_PADD_PLU_Creances_Arret.pdf"],["3. Orientations d'aménagement et de programmation","2017/02/3_OAP_PLU_Creances_Arret.pdf"],["4.1 Règlement écrit","2017/02/4_1_Reglement-ecrit_PLU_Creances_Arret.pdf"],["4.2.1 Plan de zonage","2022/09/4_2_1_PlanDeZonageAppro_A0.pdf"],["4.2.2 Plan des prescriptions","2017/02/4_2_2_Plan-des-prescriptions_PLU_Creances_Arret.pdf"],["4.2.3 Plan des informations","2017/02/4_2_3_Plan-des-informations_PLU_Creances_Arret.pdf"],["4.2.4 Plan des risques","2017/02/4_2_4_Plan-des-risques_PLU_Creances_Arret.pdf"],["5.1 Annexes écrites","2017/02/5_1_Annexes-ecrites_PLU_Creances_Arret.pdf"],["5.2 Annexes graphiques","2017/02/5_2_Annexes-graphiques_PLU_Creances_Arret.pdf"],["5.2.5 Plan des servitudes d'utilité publique","2017/02/5_2_5_Plan-des-Servitudes-d-Utilite-Publique_PLU-Creances_Arret.pdf"]]],
+ ["Bulletins municipaux consacrés au PLU",[["Bulletin de juillet 2016","2017/02/bulletin-juillet-2016-PLU.pdf"],["Bulletin de juillet 2015","2017/02/bulletin-juillet-2015-PLU.pdf"]]]
+];
+
+/* ---------- Pages ---------- */
+const SECTIONS = {mairie:"Mairie", vivre:"Vivre à Créances", enfance:"Enfance et jeunesse", loisirs:"Loisirs et tourisme", economie:"Économie", actualites:"Actualités", infos:"Informations"};
+const P = {};
+function page(id, sec, title, lead, body){ P[id] = {id, sec, title, lead, body}; }
+const hubCard = (id, txt) => `<a class="card" href="#${id}" data-go="${id}"><h3>${esc(P[id].title)}</h3><p class="meta" style="font-size:.9375rem">${txt}</p></a>`;
+const docList = (items) => `<ul class="grid" style="list-style:none;gap:8px">${items.join("")}</ul>`;
+const docItem = (href, label, meta) => `<li><a href="${href}" rel="noopener" style="display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:6px;text-decoration:none"><span style="color:var(--accent);flex:0 0 auto">${I.file}</span><span><span style="color:var(--fg);font-weight:600">${label}</span>${meta?`<br><span class="meta">${meta}</span>`:""}</span></a></li>`;
+
+/* Accueil */
+page("accueil","","Accueil","",()=>{
+  const up = AGENDA.filter(e=>!e.d.endsWith("-00") && new Date(e.d+"T23:59:00")>=TODAY).slice(0,4);
+  return `
+  <section class="wrap hero" aria-label="Bienvenue">
+    <div class="pic">${photo("mairie","big")}
+      <div class="cap"><h1>Bienvenue à Créances</h1><p>Commune maraîchère de la côte ouest de la Manche, renommée pour sa carotte des sables, sa plage de 5 km et ses dunes.</p></div>
+    </div>
+    <aside class="card soft" style="gap:12px">
+      <h2 style="font-size:var(--step-2)">La mairie</h2>
+      <p>107 rue des écoles<br>50710 Créances</p>
+      <p style="font-size:1.125rem">${tel("02.33.46.30.18")}</p>
+      <p><a href="mailto:accueil@ville-creances.fr">accueil@ville-creances.fr</a></p>
+      <div style="border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:6px">
+        <p style="font-weight:700">Horaires d'ouverture</p>
+        ${HORAIRES}
+      </div>
+      <a class="btn" href="#contact" data-go="contact" style="margin-top:auto">Écrire à la mairie</a>
+    </aside>
+  </section>
+
+  <section class="wrap section" aria-labelledby="h-quick">
+    <h2 id="h-quick">Accès rapides</h2>
+    <div class="quick">
+      <a href="#demarches" data-go="demarches">${I.doc}Démarches administratives</a>
+      <a href="#contact" data-go="contact">${I.clock}Horaires et contact de la mairie</a>
+      <a href="#urgences" data-go="urgences">${I.cross}Services et urgences</a>
+      <a href="#camping" data-go="camping">${I.tent}Camping des Dunes</a>
+      <a href="#dechetterie" data-go="dechetterie">${I.bin}Déchetterie</a>
+      <a href="#cantine" data-go="cantine">${I.bowl}Cantine et menus</a>
+    </div>
+  </section>
+
+  <section class="wrap section two">
+    <div class="a">
+      <div class="head-row"><h2>Actualités</h2><a href="#actualites" data-go="actualites" style="font-weight:600">Toutes les actualités</a></div>
+      <div style="margin-top:12px">${NEWS.slice(1,4).map(newsItem).join("")}</div>
+    </div>
+    <div class="b">
+      <div class="head-row"><h2>Agenda</h2><a href="#agenda" data-go="agenda" style="font-weight:600">Calendrier 2026</a></div>
+      <ul style="list-style:none;display:flex;flex-direction:column;gap:12px;margin-top:16px">${up.length?up.map(evItem).join(""):`<li>${manque("calendrier des fêtes 2027.")}</li>`}</ul>
+      <div class="card soft" style="margin-top:20px">
+        <h3>Recevez les alertes de la commune</h3>
+        <p style="font-size:.9375rem">La commune informe aussi via l'application gratuite PanneauPocket (annonce du 12 mai 2026).</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap section" aria-labelledby="h-disc">
+    <div class="head-row"><h2 id="h-disc">Découvrir Créances</h2><a href="#avoir" data-go="avoir" style="font-weight:600">À faire, à voir</a></div>
+    <div class="grid g4 disc">
+      <a href="#avoir" data-go="avoir">${photo("plage")}<h3>La plage</h3><p>5 km de sable fin avec vue sur les îles anglo-normandes.</p></a>
+      <a href="#avoir" data-go="avoir">${photo("dunes")}<h3>Landes et dunes</h3><p>Deux circuits de randonnée près du bourg, avec aires de pique-nique.</p></a>
+      <a href="#avoir" data-go="avoir">${photo("eglise")}<h3>Patrimoine</h3><p>Deux églises, la grotte de 1929, le pont de la Goutte et son lavoir.</p></a>
+      <a href="#avoir" data-go="avoir">${photo("fleurs")}<h3>Ville fleurie</h3><p>Créances porte le label Villes et Villages fleuris, 3 fleurs.</p></a>
+    </div>
+  </section>
+
+  <section class="wrap section" aria-labelledby="h-maire">
+    <div class="card" style="max-width:820px">
+      <h2 id="h-maire" style="font-size:var(--step-2)">Le mot du maire</h2>
+      <p>Créances est une commune maraîchère, située sur la Côte Ouest de la Manche, chef-lieu de canton avec ses 2 099 habitants, renommée pour la culture de la fameuse « Carotte des Sables », et disposant de nombreux services adaptés aux besoins de la population. À vous de découvrir au travers des différentes rubriques présentées cette commune où « il fait bon vivre ». Bonne navigation et bien cordialement à vous.</p>
+      <p style="font-weight:700">Henri LEMOIGNE</p>
+      ${verif("texte et chiffre de population repris d'une page datant de 2016 ; photo du maire à fournir.")}
+    </div>
+  </section>`;
+});
+function newsItem(n){
+  const old = n.d < "2024-01-01";
+  return `<article class="news-item"><div class="thumb" aria-hidden="true">${I.file}</div><div style="display:flex;flex-direction:column;gap:4px;min-width:0"><p class="meta"><time datetime="${n.d}">${fmt(n.d)}</time>${old?` · <span class="tag old">Ancien, à archiver ?</span>`:""}</p><h3><a href="${n.u}" rel="noopener">${esc(n.t)}</a></h3>${n.x?`<p style="font-size:.9375rem">${esc(n.x)}</p>`:""}</div></article>`;
+}
+function evItem(e){
+  const nodate = e.d.endsWith("-00"); const d = new Date((nodate?e.d.slice(0,8)+"01":e.d)+"T12:00:00");
+  const past = !nodate && new Date(e.d+"T23:59:00") < TODAY;
+  return `<li class="ev${past?" past":""}"><div class="date"><b class="tnum">${nodate?"?":d.getDate()}</b><span>${MONTHS[d.getMonth()]}</span></div><p style="font-size:.9375rem;line-height:1.45"><strong>${esc(e.t)}</strong>${e.h?` · ${esc(e.h)}`:""}${e.l?`<br><span class="meta" style="font-size:.875rem">${esc(e.l)}</span>`:""}${past?` <span class="vh">(passé)</span>`:""}</p></li>`;
+}
+
+/* ---------- Mairie ---------- */
+page("mairie","mairie","Mairie","L'équipe municipale, les commissions, les documents officiels et le contact.",()=>`
+  <div class="grid g3 hub">${hubCard("equipe","Le maire, les 5 adjoints, les délégués et les conseillers.")}${hubCard("commissions","Commissions communales, extra-municipales et délégués.")}${hubCard("contact","Adresse, téléphone, e-mail et formulaire.")}${hubCard("bulletins","12 bulletins, de janvier 2018 à janvier 2025.")}${hubCard("conseil","Extraits des conseils municipaux, de 2017 à 2024.")}${hubCard("plu","Plan local d'urbanisme : rapport, règlement, plans.")}</div>`);
+
+const ELUS = [["Maire","Henri LEMOIGNE",""],["1re adjointe","Stéphanie RENÉ","Finances, ressources humaines et communication"],["2e adjoint","Philippe MAQUIN","Administration générale, urbanisme, sécurité et cimetières"],["3e adjointe","Anne CORON","Affaires sociales et scolaires, logement"],["4e adjoint","Alain NAVARRE","Travaux de voirie et de bâtiments, espaces verts et forêt"],["5e adjointe","Ghislaine GRISEL","Vie associative, culture et tourisme"],["Conseiller délégué","Eric MORIN","Sports"],["Conseiller délégué","Christophe LECESNE","Affaires agricoles"]];
+const CONS = ["Hedwige COLLETTE","Jacqueline ROPTIN","Philippe JEAN","Thierry JACQUETTE","Michèle LORD","Thierry VARNIERE","Chantal CADEL","Stéphane LENOIR","Sylvie BERTRAND","Nathalie LEPLUMEY","Valentin BAZAN"];
+const avatar = `<div style="width:64px;height:64px;border-radius:50%;background:var(--soft2);display:flex;align-items:center;justify-content:center;color:var(--muted);flex:0 0 auto" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg></div>`;
+page("equipe","mairie","L'équipe municipale","19 élus : le maire, 5 adjoints, 2 conseillers délégués et 11 conseillers municipaux.",()=>`
+  <div class="grid g3">${ELUS.map(([r,n,d])=>`<div class="card" style="flex-direction:row;gap:14px;align-items:flex-start">${avatar}<div><p class="meta" style="font-weight:700;text-transform:uppercase;letter-spacing:.04em">${r}</p><h3>${n}</h3>${d?`<p style="font-size:.9375rem">${d}</p>`:""}</div></div>`).join("")}</div>
+  <section class="section"><h2>Conseillers municipaux</h2><ul class="grid g4" style="list-style:none">${CONS.map(n=>`<li class="card" style="flex-direction:row;align-items:center;gap:12px;padding:12px">${avatar.replace(/64px/g,"44px")}<span style="font-weight:600">${n}</span></li>`).join("")}</ul></section>
+  ${verif("les photos des élus sont remplacées par des emplacements : à fournir avec l'accord de chaque élu.")}
+  ${updated("6 mai 2026")}`);
+
+page("commissions","mairie","Les commissions","Commissions communales, commissions extra-municipales et délégués aux organismes extérieurs.",()=>{
+  const com = [["Commission de contrôle des listes électorales","Membres : voir l'arrêté de nomination (lien à fournir par la mairie)."],["Commission d'appel d'offres","Titulaires : Alain NAVARRE, Philippe MAQUIN, Philippe JEAN. Suppléants : Stéphanie RENÉ, Thierry VARNIERE, Thierry JACQUETTE."],["Affaires scolaires et jeunesse","Responsable : Anne CORON. Membres : Ghislaine GRISEL, Thierry VARNIERE, Eric MORIN, Michèle LORD, Valentin BAZAN, Stéphane LENOIR."],["Vie associative, fleurissement, fêtes, animations et tourisme","Responsable : Ghislaine GRISEL. Membres : Thierry JACQUETTE, Hedwige COLLETTE, Chantal CADEL, Jacqueline ROPTIN, Eric MORIN, Stéphanie RENÉ."],["Travaux (bâtiments, voirie et espaces verts)","Responsable : Alain NAVARRE. Membres : Philippe MAQUIN, Christophe LECESNE, Thierry JACQUETTE, Thierry VARNIERE, Eric MORIN, Stéphanie RENÉ."],["Économie, agriculture et environnement","Responsable : Christophe LECESNE. Membres : Philippe JEAN, Nathalie LEPLUMEY, Stéphane LENOIR, Valentin BAZAN, Hedwige COLLETTE."],["Logement","Responsable : Anne CORON. Membres : Sylvie BERTRAND, Ghislaine GRISEL, Philippe MAQUIN, Nathalie LEPLUMEY, Valentin BAZAN, Chantal CADEL, Jacqueline ROPTIN."],["Culture","Responsable : Ghislaine GRISEL. Membres : Valentin BAZAN, Eric MORIN, Thierry VARNIERE, Sylvie BERTRAND, Hedwige COLLETTE, Chantal CADEL."]];
+  const extra = [["Économie, agriculture et environnement","Corentin LEPLUMEY, Antoine SAINT-LO, Charles COBRUN, Julien LEFEBVRE, Laurent LEMOIGNE, Romain CORRUBLE."],["Vie associative, fleurissement, fêtes, animations et tourisme","Martine NÉEL, Guy PERDREAU, Mireille NAVARRE, Jacques REGNAULT, Éliane LETOUZÉ."]];
+  const deleg = [["Syndicat mixte du Parc naturel régional des Marais du Cotentin et du Bessin","Philippe MAQUIN, Stéphane LENOIR"],["Centre social « Maison du Pays de Lessay »","Conseil d'administration : Anne CORON · Commission Séniors : Michèle LORD · Vie sociale locale : Anne CORON · Petite enfance, enfance et jeunesse : Thierry VARNIERE · Famille – Parentalité : Sylvie BERTRAND · Réseau de lutte contre les violences intrafamiliales : Michèle LORD"],["Syndicat départemental d'énergie de la Manche","Philippe MAQUIN, Hedwige COLLETTE"],["Conseil local de l'eau potable de Créances-Pirou","Titulaires : Henri LEMOIGNE, Thierry JACQUETTE, Philippe JEAN. Suppléant(e) : à compléter par la mairie."],["CCAS Créances","Anne CORON, Hedwige COLLETTE, Sylvie BERTRAND, Jacqueline ROPTIN, Michèle LORD, Eric MORIN"],["Communauté de communes Côte Ouest Centre Manche","Titulaires : Henri LEMOIGNE (liste à compléter par la mairie)"],["Bibliothèque municipale et bibliothèque départementale de prêt","Ghislaine GRISEL"],["Correspondant défense","Philippe MAQUIN"],["Correspondant forêt-bois","Christophe LECESNE"],["Comité de pilotage Natura 2000","Stéphane LENOIR, Christophe LECESNE"],["Représentant Attitude Manche","Ghislaine GRISEL"]];
+  const tbl = (rows,h1,h2)=>`<div class="table-box"><table><thead><tr><th scope="col">${h1}</th><th scope="col">${h2}</th></tr></thead><tbody>${rows.map(([a,b])=>`<tr><th scope="row" style="background:transparent;font-weight:600;min-width:200px">${a}</th><td>${b}</td></tr>`).join("")}</tbody></table></div>`;
+  return `<div class="section" style="padding-top:0"><h2>Commissions communales</h2>${tbl(com,"Commission","Composition")}</div>
+  <div class="section"><h2>Commissions extra-municipales</h2>${tbl(extra,"Commission","Membres")}</div>
+  <div class="section"><h2>Délégués aux organismes extérieurs</h2>${tbl(deleg,"Organisme","Délégués")}</div>
+  ${verif("deux coquilles du site actuel sont corrigées ici (« Valentn », « COLETTE ») : à valider.")}
+  ${updated("5 juin 2026")}`;
+});
+
+page("contact","mairie","Contacter la mairie","Par téléphone, par e-mail ou avec le formulaire.",()=>`
+  <div class="two">
+    <div class="a">
+      <form class="contact" id="contactForm" novalidate>
+        <div class="row">
+          <label for="c-nom">Nom *<input id="c-nom" name="nom" required autocomplete="family-name"></label>
+          <label for="c-prenom">Prénom<input id="c-prenom" name="prenom" autocomplete="given-name"></label>
+        </div>
+        <label for="c-adresse">Adresse *<input id="c-adresse" name="adresse" required autocomplete="street-address"></label>
+        <div class="row">
+          <label for="c-cp">Code postal *<input id="c-cp" name="cp" required inputmode="numeric" autocomplete="postal-code"></label>
+          <label for="c-ville">Ville *<input id="c-ville" name="ville" required autocomplete="address-level2"></label>
+        </div>
+        <div class="row">
+          <label for="c-mail">Adresse e-mail *<input id="c-mail" name="mail" type="email" required autocomplete="email"></label>
+          <label for="c-tel">Téléphone<input id="c-tel" name="tel" type="tel" autocomplete="tel"></label>
+        </div>
+        <label for="c-msg">Votre message *<textarea id="c-msg" name="msg" rows="6" required></textarea></label>
+        <label class="consent" for="c-ok"><input id="c-ok" type="checkbox" required><span>J'accepte que les informations saisies soient exploitées uniquement dans le cadre de ma demande de contact avec la mairie de Créances. *</span></label>
+        <p class="meta">* champs obligatoires. Texte de consentement repris du site actuel, à faire valider par la mairie.</p>
+        <div><button class="btn" type="submit">Envoyer le message</button></div>
+        <p id="formMsg" class="ok" hidden role="status"></p>
+      </form>
+    </div>
+    <aside class="b" style="display:flex;flex-direction:column;gap:16px">
+      <div class="card soft" style="gap:10px">
+        <h2 style="font-size:var(--step-2)">Mairie de Créances</h2>
+        <p>107 rue des écoles<br>50710 Créances</p>
+        <p>${tel("02.33.46.30.18")}</p>
+        <p class="tnum">Fax : 02.33.46.54.95</p>
+        <p><a href="mailto:accueil@ville-creances.fr">accueil@ville-creances.fr</a></p>
+      </div>
+      <div class="card"><h2 style="font-size:var(--step-2)">Horaires d'ouverture</h2>${HORAIRES}</div>
+      ${verif("le site actuel indique aussi mairiedecreances@orange.fr dans ses mentions légales : quelle adresse garder ?")}
+      ${photo("mairie")}
+    </aside>
+  </div>`);
+
+page("bulletins","mairie","Bulletins municipaux","12 bulletins consultables en ligne sur Calaméo.",()=>`
+  ${docList(BULLETINS.map(([t,id])=>docItem("https://www.calameo.com/read/"+id,"Bulletin "+t,"Calaméo")))}
+  ${manque("bulletin(s) 2026, s'il y en a.")}${updated("6 janvier 2025")}`);
+
+page("conseil","mairie","Comptes rendus du conseil municipal",`${CR.length} documents, du 27 mars 2017 au 21 mai 2024, consultables sur Calaméo.`,()=>{
+  const years = [...new Set(CR.map(c=>c[0].slice(0,4)))];
+  return `${manque("comptes rendus publiés depuis mai 2024.")}
+  ${years.map(y=>`<section class="section"><h2>${y}</h2>${docList(CR.filter(c=>c[0].startsWith(y)).map(([d,id,lab])=>docItem("https://www.calameo.com/read/"+id, lab||("Extrait du conseil municipal du "+fmt(d)),"Calaméo")))}</section>`).join("")}
+  ${updated("30 mai 2024")}`;
+});
+
+page("plu","mairie","Plan local d'urbanisme (PLU)","Documents du PLU et de son enquête publique.",()=>`
+  ${verif("ces documents datent de 2015 à 2017 (plan de zonage mis à jour en 2022). La mairie doit indiquer la version en vigueur.")}
+  <p class="prose">Conformément à l'arrêté du 8 février 2017 prescrivant l'ouverture d'une enquête publique sur le projet du PLU de la commune de Créances, voici le rapport et les conclusions motivées du commissaire enquêteur, ainsi que les pièces du dossier.</p>
+  ${PLU.map(([h,items])=>`<section class="section"><h2>${h}</h2>${docList(items.map(([t,f])=>docItem(U+f,t,"PDF")))}</section>`).join("")}
+  <p class="meta" style="margin-top:16px">Pour les règles d'urbanisme en vigueur, voir aussi le <a href="#urbanisme" data-go="urbanisme">Géoportail de l'urbanisme</a>. ${updated("9 septembre 2022")}</p>`);
+
+/* ---------- Vivre ---------- */
+page("vivre","vivre","Vivre à Créances","Démarches, services, salles, transports, déchets, urbanisme et cimetière.",()=>`
+  <div style="margin-bottom:24px">${photo("bourg","wide")}</div>
+  <div class="grid g3 hub">${hubCard("demarches","Carte d'identité, changement d'adresse, listes électorales, recensement.")}${hubCard("urgences","Numéros utiles : santé, secours, écoles, poste.")}${hubCard("salles","Espace intergénérationnel, salle multi-activités, salle des associations.")}${hubCard("nomad","Transports en car de la Région Normandie.")}${hubCard("dechetterie","Adresse, accès et horaires d'hiver et d'été.")}${hubCard("urbanisme","Règles d'urbanisme et dépôt des demandes en ligne.")}${hubCard("cimetiere","Plans, concessions et règlement en ligne.")}${hubCard("fibre","Éligibilité et opérateurs de la fibre optique.")}</div>`);
+
+page("demarches","vivre","Démarches administratives","Les démarches les plus courantes. Pour tout autre document : service-public.fr.",()=>`
+  <div style="max-width:820px">
+  <details open><summary>Carte d'identité</summary><div class="in">
+    <p><strong>Le saviez-vous ?</strong> Si votre carte d'identité a été faite après le 1er janvier 2004, sa durée de validité est prolongée automatiquement de 5 ans. Attention, certains pays ne reconnaissent pas cette règle : avant de voyager, consultez la ${ext("http://www.interieur.gouv.fr/Archives/Archives-des-actualites/2014/Duree-de-validite-de-la-CNI","liste du ministère de l'Intérieur")}.</p>
+    <p>Pour le renouvellement de votre carte : ${ext("https://www.service-public.fr/particuliers/vosdroits/N358","modalités sur service-public.fr")}.</p>
+    ${verif("règle et lien datant de 2014 : à confirmer avant mise en ligne.")}
+  </div></details>
+  <details><summary>Signaler un changement d'adresse</summary><div class="in">
+    <p>Lors d'un déménagement, déclarez votre changement d'adresse auprès de la commune de votre nouveau domicile.</p>
+    <p><strong>Vous emménagez dans une nouvelle commune :</strong> inscrivez-vous sur la liste électorale de votre nouvelle commune, comme pour une première inscription. Vous serez radié automatiquement de la liste de votre ancien domicile.</p>
+    <p><strong>Vous restez dans la même commune :</strong> présentez-vous à la mairie avec un justificatif de domicile. Si votre bureau de vote change, vous recevrez une nouvelle carte électorale.</p>
+  </div></details>
+  <details><summary>S'inscrire sur les listes électorales</summary><div class="in">
+    <p>Les demandes peuvent être déposées toute l'année. Pour voter, la demande doit être déposée au plus tard le 6e vendredi précédant le 1er tour du scrutin.</p>
+    <p><strong>Conditions :</strong></p><ul><li>avoir au moins 18 ans la veille du jour de l'élection (ou la veille du 2e tour) ;</li><li>être français ;</li><li>jouir de ses droits civiques et politiques.</li></ul>
+    <p><strong>Où s'inscrire :</strong> à l'accueil de la mairie ou ${ext("https://www.service-public.fr/particuliers/vosdroits/R16396","en ligne sur service-public.fr")}.</p>
+    <p><strong>Pièces à présenter :</strong></p><ul><li>une carte d'identité ou un passeport en cours de validité ou périmé depuis moins de 2 ans ;</li><li>un justificatif de domicile de moins de 3 mois, ou un justificatif d'attache avec la commune.</li></ul>
+    <p><strong>Jeunes majeurs :</strong> le jeune recensé pour la Journée défense et citoyenneté est inscrit d'office. Sinon, il s'adresse à la mairie.</p>
+  </div></details>
+  <details><summary>Recensement citoyen (16 ans)</summary><div class="in">
+    <p>Tous les jeunes Français, filles et garçons, doivent se faire recenser dans les 3 mois qui suivent leur 16e anniversaire, en vue de la Journée défense et citoyenneté (JDC). En cas de retard, la situation peut être régularisée jusqu'à 25 ans.</p>
+    <p><strong>Comment ?</strong> Se présenter à la mairie avec sa carte d'identité et le livret de famille des parents, ou ${ext("https://www.service-public.fr/particuliers/vosdroits/R2054","faire la démarche en ligne")}.</p>
+    <p><strong>Document à conserver :</strong> l'attestation remise est demandée pour les examens et concours (CAP, BEP, bac, permis de conduire…). En cas de perte, contacter le Centre du service national, de préférence par courriel : csn-caen.jdc.fct@intradef.gouv.fr.</p>
+  </div></details>
+  <div class="card soft" style="margin-top:20px"><p>Pour tout autre document : ${ext("https://www.service-public.fr/","service-public.fr")}. Dans tous les cas, n'hésitez pas à <a href="#contact" data-go="contact">contacter votre mairie</a>.</p></div>
+  ${updated("28 octobre 2022")}
+  </div>`);
+
+const SERV = [["Mairie de Créances","02.33.46.30.18"],["Côte Ouest Centre Manche Tourisme (Lessay)","02.33.45.14.34"],["Camping des Dunes","02.33.46.31.86"],["Déchetterie communautaire","02.33.46.04.15"],["Bureau de poste de Créances","02.33.76.77.90"],["Bibliothèque","02.33.07.82.64"],["École maternelle (rue des écoles)","02.33.46.51.61"],["École primaire (rue des écoles)","02.33.46.47.45"],["École maternelle Notre-Dame (rue Mesnil)","02.33.45.79.54"],["École primaire Notre-Dame (rue Mer)","02.33.46.34.74"]];
+const URG = [["Pompiers","18 / 112"],["SAMU","15"],["Gendarmerie","17"],["Secours en mer","196"],["Personnes sourdes ou malentendantes","114"],["Hôpital de Coutances","02.33.47.40.00"],["Clinique de Coutances","08.26.20.72.17"],["Médecin","02.33.46.32.32"],["Infirmières","02.33.07.78.27"],["Dentiste","02.33.46.37.43"],["Ambulances, taxis","02.33.46.40.74"],["Pharmacie","02.33.46.30.21"]];
+page("urgences","vivre","Services et urgences","Les numéros utiles. En cas d'urgence vitale, composez le 15 ou le 112.",()=>`
+  <div class="two">
+    <section class="a" aria-labelledby="h-urg"><h2 id="h-urg" style="margin-bottom:14px">Urgences</h2>
+      <div class="grid g2">${URG.map(([n,t])=>`<div class="card" style="flex-direction:row;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><span style="font-weight:600">${n}</span>${t.split(" / ").map(x=>tel(x)).join(" ")}</div>`).join("")}</div>
+    </section>
+    <section class="b" aria-labelledby="h-serv"><h2 id="h-serv" style="margin-bottom:14px">Services</h2>
+      <ul style="list-style:none;display:flex;flex-direction:column">${SERV.map(([n,t])=>`<li style="display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);flex-wrap:wrap"><span>${n}</span>${tel(t)}</li>`).join("")}</ul>
+      <p style="margin-top:12px;font-size:.9375rem">Paroisse Saint-Jean : ${ext("https://www.coutances.catholique.fr/pres-de-chez-vous/Paroisse-Saint-Jean-de-Creances","horaires des messes")}.</p>
+      ${verif("cette page liste 4 écoles, la page Écoles en présente 2 (avec d'autres adresses) ; le numéro du camping diffère de celui de son site (02 61 76 00 58).")}
+    </section>
+  </div>
+  <div style="margin-top:28px">${photo("poste","wide")}</div>
+  ${updated("5 juin 2026")}`);
+
+page("salles","vivre","Location de salles","La commune dispose de 3 salles. Réservations : mairie, 02 33 46 30 18.",()=>`
+  <div class="two">
+    <div class="a prose">
+      <h2>L'espace intergénérationnel</h2>
+      <p>Il peut accueillir jusqu'à 380 personnes. Équipé d'une cuisine, d'une scène et d'une piste de danse, il peut être loué partiellement ou en totalité et convient à tout type de banquets ou assemblées. La salle dite « 3 » est équipée de plusieurs branchements informatiques permettant des formations. L'espace est accessible aux personnes handicapées.</p>
+      <p>Pour toute réservation : ${tel("02 33 46 30 18")}</p>
+      <h3 style="margin-top:8px">Tarifs (depuis le 1er avril 2023)</h3>
+      ${manque("tableau des tarifs. Sur le site actuel, il n'existe qu'en image (délibération de 2023) : il faut le saisir en texte pour qu'il soit lisible par tous.")}
+      <p class="meta">(*) Tarif du chauffage dû pour la période du 15 octobre au 15 mars.</p>
+      <h3>Acompte à la réservation</h3>
+      <ul><li>50 % du coût total pour les réservations privées, chauffage compris ;</li><li>50 % pour les associations hors commune, chauffage compris ;</li><li>30 % pour les associations de la commune, chauffage compris.</li></ul>
+      <h3>Services</h3>
+      <ul><li>Location de la vaisselle : 1 euro le couvert.</li><li>Location des appareils de sonorisation : 70 €, avec dépôt d'une caution de 300 €.</li><li>Forfait pour nettoyage non ou mal réalisé : 80 euros.</li><li>Arbre de Noël des écoles : gratuit.</li><li>Caution : chèque de 500 euros à la remise des clés.</li><li>Gratuité une fois par an, du 1er octobre au 31 mars, pour les associations dont le siège est dans la commune, avec un forfait nettoyage obligatoire de 60 euros.</li></ul>
+      ${verif("tarifs fixés par délibération du 28 février 2023 : confirmer qu'ils sont toujours en vigueur.")}
+    </div>
+    <div class="b" style="display:flex;flex-direction:column;gap:16px">${photo("salle")}
+      <div class="card"><h2 style="font-size:var(--step-2)">La salle multi-activités</h2><p>Rue du Vivier, 300 m², 25 places de parking. Équipée d'un écran de projection, elle convient aux réunions et rassemblements. Réservée exclusivement aux associations de la commune.</p></div>
+      <div class="card"><h2 style="font-size:var(--step-2)">La salle des associations</h2><p>26 rue du Haut Chemin, près de la poste. Une vingtaine de personnes. Réservée en priorité aux associations de la commune.</p></div>
+    </div>
+  </div>${updated("13 septembre 2023")}`);
+
+page("nomad","vivre","Transports Nomad","Le réseau de cars de la Région Normandie.",()=>`
+  <div class="card soft" style="max-width:560px;gap:10px"><p>Site internet : ${ext("https://nomad.normandie.fr","nomad.normandie.fr")}</p><p>E-mail : nomad-car@normandie.fr</p><p style="font-size:1.125rem">${tel("02 22 55 00 10")}</p></div>${updated("6 juin 2025")}`);
+
+page("dechetterie","vivre","Déchetterie","Parc d'activités de la Côte Ouest, 50710 Créances.",()=>`
+  <div class="prose"><p>Accès gratuit pour les habitants du canton et les personnes possédant une résidence secondaire, sur présentation au gardien de l'autocollant de la Communauté de communes (à retirer en mairie).</p><p>Dépôts autorisés : déchets verts, bois, gravats inertes, métaux et ferrailles, cartons, encombrants non recyclables. Un guide de tri est disponible au siège de la Communauté de communes à Lessay.</p></div>
+  <div class="section"><h2>Horaires</h2>
+  <div class="table-box" style="max-width:760px"><table><thead><tr><th scope="col">Jour</th><th scope="col">1er octobre – 31 mars</th><th scope="col">1er avril – 30 septembre</th></tr></thead><tbody>
+  <tr><th scope="row">Lundi</th><td>9 h – 12 h · 13 h 30 – 17 h</td><td>8 h 30 – 12 h · 13 h 30 – 18 h</td></tr>
+  <tr><th scope="row">Mardi</th><td>Fermé</td><td>8 h 30 – 12 h · 13 h 30 – 18 h</td></tr>
+  <tr><th scope="row">Mercredi</th><td>9 h – 12 h · 13 h 30 – 17 h</td><td>8 h 30 – 12 h · 13 h 30 – 18 h</td></tr>
+  <tr><th scope="row">Jeudi</th><td>Fermé</td><td>Fermé</td></tr>
+  <tr><th scope="row">Vendredi</th><td>9 h – 12 h · 13 h 30 – 17 h</td><td>8 h 30 – 12 h · 13 h 30 – 18 h</td></tr>
+  <tr><th scope="row">Samedi</th><td>9 h – 12 h · 13 h 30 – 17 h</td><td>8 h 30 – 12 h · 13 h 30 – 18 h</td></tr>
+  <tr><th scope="row">Dimanche</th><td>Fermé</td><td>Fermé</td></tr></tbody></table></div>
+  <p>Accès possible jusqu'à 15 minutes avant la fermeture. Fermeture exceptionnelle le samedi de la Foire Sainte-Croix à Lessay.</p>
+  <p>Téléphone : ${tel("02.33.46.04.15")} · ${ext("https://www.cocm.fr/fr/au-quotidien/preserver/gestion-des-dechets-menagers/dechetteries.html","horaires sur le site de la Communauté de communes")}</p>
+  ${verif("horaires repris d'une page de mars 2023 : à confirmer auprès de la Communauté de communes.")}</div>
+  ${updated("24 mars 2023")}`);
+
+page("urbanisme","vivre","Urbanisme","Consulter les règles et déposer une demande en ligne.",()=>`
+  <div class="grid g2">
+    <a class="card" href="https://www.geoportail-urbanisme.gouv.fr/" rel="noopener" style="text-decoration:none;color:var(--fg)"><h3 style="color:var(--accent)">Géoportail de l'urbanisme</h3><p>Consulter les règles applicables sur le territoire.</p></a>
+    <a class="card" href="https://cartads.communaute-coutances.fr/guichet-unique/Login/Particulier" rel="noopener" style="text-decoration:none;color:var(--fg)"><h3 style="color:var(--accent)">Guichet unique</h3><p>Déposer votre demande et suivre votre projet en ligne.</p></a>
+    <a class="card" href="#plu" data-go="plu" style="text-decoration:none;color:var(--fg)"><h3 style="color:var(--accent)">Plan local d'urbanisme</h3><p>Rapport, règlement et plans du PLU.</p></a>
+  </div>
+  <div class="card soft" style="margin-top:20px"><h3>Lotissements communaux</h3><p>« Il n'y a plus de lots à vendre à ce jour. »</p>${verif("information de 2020, alors que l'accueil actuel affiche encore « Vente de terrains ».")}</div>
+  ${updated("28 octobre 2022")}`);
+
+page("cimetiere","vivre","Cimetière","Toutes les informations sur les cimetières du Bourg et du Buisson, grâce au logiciel Gescime.",()=>`
+  <div class="prose"><p>Sur Gescime, vous pouvez consulter les plans des cimetières (le Bourg et le Buisson), obtenir des informations sur les défunts (dates, emplacement), les tarifs des concessions et le règlement du cimetière.</p><p><a class="btn" href="https://cimetiere.gescime.com/creances-cimetiere-50710" rel="noopener">Accéder à Gescime</a></p>
+  <div class="card soft"><h3>En cours</h3><p>Procédure de reprise de concessions en état d'abandon dans le cimetière du Bourg : deuxième constat le 3 novembre 2026 à 14 heures.</p></div></div>`);
+
+page("fibre","vivre","La fibre optique","Grâce au réseau déployé par Manche Numérique, la fibre est disponible à Créances.",()=>`
+  <div class="prose">
+    <h2 style="font-size:var(--step-2)">Suis-je éligible ?</h2>
+    <p>Vérifiez votre éligibilité en saisissant votre adresse sur ${ext("https://eligibilite-fibre.altitudeinfra.fr/dsp/AI-MNUM","le site d'éligibilité de Manche Fibre")}. Pas encore éligible ? Consultez le ${ext("https://manchenumerique.fr/la-fibre/deploiement/a-quand-la-fibre-chez-moi/","planning de déploiement de Manche Numérique")}.</p>
+    <h2 style="font-size:var(--step-2)">Comment souscrire ?</h2>
+    <p>Une fois votre foyer éligible, contactez l'un des fournisseurs d'accès présents sur le réseau (${ext("https://www.manche-fibre.fr/le-projet-tres-haut-debit/operateurs/","liste des opérateurs")}). La souscription déclenche la venue d'un technicien qui effectue le raccordement.</p>
+    <p>Le réseau très haut débit de la Manche est porté par le Département via le syndicat Manche Numérique. Manche Fibre by Altitude Infra en assure l'exploitation, la maintenance et la commercialisation. Plus d'informations : ${ext("http://www.manche-fibre.fr","manche-fibre.fr")} · ${ext("http://www.manche-fibre.fr/la-fibre-pour-les-entreprises/","espace professionnels")}.</p>
+    ${verif("le texte actuel annonce « d'ici 2025, plus de 320 000 foyers raccordables » : à mettre à jour.")}
+  </div>`);
+
+/* ---------- Enfance ---------- */
+page("enfance","enfance","Enfance et jeunesse","Écoles, cantine, centre de loisirs, espace jeunes et aire de jeux.",()=>`
+  <div class="grid g3 hub">${hubCard("ecoles","École publique « 1, 2, 3 Soleil » et école privée Notre-Dame.")}${hubCard("cantine","Prix du repas, inscriptions, menus en ligne.")}${hubCard("centre","Accueil périscolaire, mercredis et vacances.")}${hubCard("jeunes","Le local des 11-17 ans, mercredis et vacances.")}${hubCard("airejeux","Pour les 2-8 ans, rue des Écoles.")}</div>`);
+
+page("ecoles","enfance","Écoles","Deux écoles accueillent les enfants de la maternelle au CM2.",()=>`
+  <div class="grid g2">
+    <div class="card">${photo("ecole")}<h2 style="font-size:var(--step-2)">École publique « 1, 2, 3 Soleil »</h2><p>120 rue des écoles. Accueille 160 élèves de la maternelle au CM2.</p><p>Contact : Mme GLOUX Servane · ${tel("02 33 46 47 45")}</p><p>${ext("http://123soleilcreances.blogspot.fr","Blog de l'école")}</p></div>
+    <div class="card">${photo("")}<h2 style="font-size:var(--step-2)">École privée Notre-Dame</h2><p>66 rue de la mer. Accueille 70 élèves de la maternelle au CM2.</p><p>Contact : ${tel("02 33 46 34 74")}</p></div>
+  </div>
+  ${verif("effectifs et contacts datant de mars 2017 ; adresses et numéros différents sur la page Services et urgences.")}`);
+
+page("cantine","enfance","Restaurant scolaire","Une centaine d'enfants fréquentent la cantine chaque jour.",()=>`
+  <div class="prose">
+    <div class="card soft"><p style="font-size:1.125rem"><strong>Prix du repas : 3,90 €</strong> (année scolaire 2024/2025, fixé par le conseil municipal)</p>${verif("prix de l'an dernier : tarif 2026/2027 à indiquer.")}</div>
+    <h2 style="font-size:var(--step-2)">Inscriptions</h2>
+    <p>L'inscription se fait en mairie, en règle générale par mois, au plus tard le 20 du mois en cours pour le mois suivant. Il est possible d'inscrire l'enfant à la semaine, au plus tard le jeudi soir pour la semaine suivante. Le régisseur encaisse le règlement des repas au moment de l'inscription.</p>
+    <h2 style="font-size:var(--step-2)">Les menus en ligne</h2>
+    <p>Consultez les menus sur ${ext("https://www.clicetmiam.fr","Clic&amp;miam")} en créant votre espace, avec le code établissement <strong>CRE507</strong>.</p>
+    <p>${ext("https://www.calameo.com/read/0051363016d8185e4f5f4","Lire le règlement de la cantine")} (Calaméo)</p>
+  </div>${updated("2 septembre 2024")}`);
+
+page("centre","enfance","Centre de loisirs 3-12 ans","L'accueil collectif de mineurs (ACM) de Créances est un service de la Maison du Pays de Lessay (centre social).",()=>`
+  <div class="two"><div class="a prose">
+    <p>Il accueille les enfants dans un cadre sécurisé, éducatif et convivial, avec des activités variées toute l'année. Ses objectifs : favoriser l'épanouissement culturel, encourager la pratique d'activités physiques et sportives et sensibiliser les enfants à devenir des citoyens de demain.</p>
+    <h2 style="font-size:var(--step-2)">Horaires</h2>
+    <div class="table-box"><table><tbody>
+      <tr><th scope="row">Jours d'école, matin</th><td>7 h 30 – 9 h 00</td></tr>
+      <tr><th scope="row">Pause méridienne</th><td>12 h 00 – 13 h 45</td></tr>
+      <tr><th scope="row">Jours d'école, soir</th><td>16 h 30 – 19 h 00</td></tr>
+      <tr><th scope="row">Mercredis et vacances scolaires</th><td>7 h 30 – 19 h 00 (journée complète)</td></tr>
+    </tbody></table></div>
+    <p>Programme des activités sur la ${ext("https://www.facebook.com/maisondupaysdelessay","page Facebook de la Maison du Pays")}.</p>
+  </div><aside class="b"><div class="card soft"><h2 style="font-size:var(--step-2)">Informations et inscriptions</h2><p>ACM de Créances</p><p style="font-size:1.125rem">${tel("06 95 28 07 93")}</p></div></aside></div>${updated("5 juin 2026")}`);
+
+page("jeunes","enfance","Espace jeunes 11-17 ans","Un local pour se retrouver, discuter, cuisiner, faire des sorties et monter des projets.",()=>`
+  <div class="grid g2">
+    <div class="card soft"><h2 style="font-size:var(--step-2)">Quand et où ?</h2><p>Les mercredis après-midi et pendant les vacances scolaires (sauf Noël), de 14 h à 18 h, en accès libre.</p><p>À Créances, à côté de la cantine scolaire.</p></div>
+    <div class="card"><h2 style="font-size:var(--step-2)">Contact : Maison du Pays de Lessay</h2><p>11 place Saint-Cloud, BP 45, 50430 Lessay</p><p>${tel("02.33.46.84.69")}</p><p>pij@maisondupaysdelessay.fr</p><p>${ext("https://www.facebook.com/profile.php?id=61573789121192","Page Facebook de l'Espace jeunes")}</p></div>
+  </div>${updated("6 mai 2026")}`);
+
+page("airejeux","enfance","Aire de jeux de la rue des Écoles","Tout près de la mairie, pour les enfants de 2 à 8 ans.",()=>`
+  <div class="two"><div class="a">${photo("airejeux")}</div><div class="b prose"><p>Cette aire de jeux a été conçue pour les enfants de 2 à 8 ans, en lien avec l'histoire de Créances : l'ancienne gare et les cultures de carottes.</p>${verif("page présente sur le site actuel mais absente du menu.")}</div></div>`);
+
+/* ---------- Loisirs et tourisme ---------- */
+page("loisirs","loisirs","Loisirs et tourisme","Agenda, bibliothèque, sports, associations, plage, camping et patrimoine.",()=>`
+  <div class="grid g3 hub">${hubCard("agenda","Le calendrier des fêtes 2026, mois par mois.")}${hubCard("bibliotheque","Horaires, inscription et animations.")}${hubCard("sports","Football, tennis, pétanque, tennis de table, loisirs de plage.")}${hubCard("associations","Les associations de la commune et leurs contacts.")}${hubCard("marees","Horaires des marées et règles de la pêche à pied.")}${hubCard("camping","VVF Villages – Les Dunes, en bord de mer.")}${hubCard("offices","Horaires des bureaux de Lessay et Pirou.")}${hubCard("avoir","Plage, sentiers, grotte, églises, pont de la Goutte, manoir.")}${hubCard("carotte","La grande fête d'août de Créances.")}${hubCard("marches","Les marchés d'été sur le parking de la plage.")}</div>`);
+
+page("agenda","loisirs","Agenda des manifestations","Calendrier des fêtes de l'année 2026.",()=>{
+  const months = [...new Set(AGENDA.map(e=>+e.d.slice(5,7)-1))];
+  const cur = TODAY.getFullYear()===2026 ? TODAY.getMonth() : 0;
+  return `<div class="dir-tools"><div class="filters" role="group" aria-label="Filtrer par mois">
+    <button class="chip" type="button" data-month="all" aria-pressed="false">Toute l'année</button>
+    ${months.map(m=>`<button class="chip" type="button" data-month="${m}" aria-pressed="${m===cur}">${MONTHS_L[m]}</button>`).join("")}
+  </div></div>
+  <div id="agendaList" style="margin-top:20px"></div>
+  ${manque("calendrier 2027.")}${updated("13 janvier 2026")}`;
+});
+
+page("bibliotheque","loisirs","Bibliothèque municipale","Dans le bourg, à côté de la mairie, face à l'école primaire publique et au centre de loisirs.",()=>`
+  <div class="two"><div class="a prose">
+    <p>La bibliothèque est ouverte à tous pour lire et emprunter des albums, contes, romans, BD, mangas, documentaires, DVD, journaux, magazines, jeux et jouets. Vous pouvez aussi venir y lire, jouer, travailler et même discuter autour d'un café.</p>
+    <h2 style="font-size:var(--step-2)">Inscription</h2>
+    <p>Gratuite pour les enfants ; 7,00 € par an pour les adultes. La carte lecteur permet de réserver et d'emprunter :</p>
+    <ul><li>autant de livres que vous le souhaitez, sans limite de durée ;</li><li>1 DVD pour 1 mois ;</li><li>1 jouet ou jeu pour 1 mois ;</li><li>1 revue pour 1 mois.</li></ul>
+    <p>La bibliothèque est animée par deux agents municipaux, Estelle et Noëlle, avec l'accompagnement de la ${ext("https://biblio.manche.fr/","bibliothèque départementale de la Manche")}, dont la navette de réservations passe tous les mois.</p>
+  </div><aside class="b" style="display:flex;flex-direction:column;gap:16px">
+    <div class="card soft"><h2 style="font-size:var(--step-2)">Horaires</h2><dl class="kv"><dt>Mardi au vendredi</dt><dd>9 h 00 – 12 h 00<br>14 h 15 – 18 h 00</dd><dt>Samedi</dt><dd>10 h 00 – 13 h 00</dd></dl></div>
+    <div class="card"><h2 style="font-size:var(--step-2)">Contact</h2><p>${tel("02.33.07.82.64")}</p><p>bibliotheque@ville-creances.fr</p><p>${ext("https://creances.bibli.fr","creances.bibli.fr")} · ${ext("https://fr-fr.facebook.com/BibliothequeMunicipaleCreances/","Facebook")}</p></div>
+  </aside></div>${updated("7 octobre 2026")}`);
+
+page("sports","loisirs","Sports et loisirs","Une commune ouverte sur de multiples activités sportives et de plein air.",()=>`
+  <div class="grid g3">
+    <div class="card"><h3>Football</h3><p>2 terrains de football.</p><p>Président : M. Hervé SALMON · ${tel("06.37.64.34.27")}</p><p>${ext("http://creancessports.over-blog.com","Site du club")}</p></div>
+    <div class="card"><h3>Tennis</h3><p>Un court en plein air près de la plage, toute l'année.</p><p>Contact : la mairie · ${tel("02.33.46.30.18")}</p><p>Tarifs : 2,50 hors saison ; 4,00 en saison.</p>${verif("unité (heure ? €) et année des tarifs à préciser.")}</div>
+    <div class="card"><h3>Handbike</h3><p>Pratique du cyclisme de haut niveau pour les personnes handicapées, grâce à une association handisport.</p><p>M. Jean-Paul LEPLUMEY · ${tel("02.33.46.25.08")}</p></div>
+    <div class="card"><h3>Pétanque</h3><p>Terrains au complexe sportif et aux gîtes de mer, ouverts gracieusement toute l'année.</p><p>M. Pascal LETOURNEUR · ${tel("02.33.07.83.03")}</p></div>
+    <div class="card"><h3>Gymnastique volontaire</h3><p>Le club de Pirou Créances Lessay propose « Gym douce » et « Gym santé ».</p><p>${ext("https://sites.google.com/site/gvpiroucreanceslessay/home","Site du club")}</p></div>
+    <div class="card"><h3>Tennis de table</h3><p>Club Créances La Feuillie : entraînements les lundis et mercredis, salle sportive communautaire près du stade.</p><p>Jean-Paul PERIER · ${tel("06.68.34.61.96")}</p><p>${ext("http://club.quomodo.com/la-feuillie-creances-tennis-de-table","Site du club")} · ${ext("https://www.facebook.com/LFCTennisDeTable/","Facebook")}</p></div>
+  </div>
+  <section class="section"><h2>Loisirs de plein air</h2><div class="prose">
+    <p>La plage de sable fin accueille de nombreuses activités : baignade, cerf-volant, speedsail, planche à voile, scooter de mer, kitesurf, surf-casting. Une cale d'accès à la mer permet la navigation de plaisance et la pêche (bar, maquereau). Randonnée dans les landes, découverte de la faune, de la flore et du patrimoine.</p>
+    <p><strong>Pêche à pied :</strong> à marée basse, les familles peuvent faire découvrir aux enfants la pêche aux coquillages. Sites utiles : ${ext("http://www.fnppsf.fr","fédération (fnppsf.fr)")} · ${ext("http://www.cpml50.fr","comité 50 (cpml50.fr)")} · <a href="#marees" data-go="marees">horaires des marées</a>.</p>
+  </div></section>${updated("22 avril 2026")}`);
+
+page("associations","loisirs","Associations","La liste complète des associations est disponible en document ; cinq d'entre elles sont présentées ici.",()=>{
+  const cats = [...new Set(ASSOS.map(a=>a.c))];
+  return `<p><a class="btn ghost" href="https://www.calameo.com/read/005136301bf707a93bfe1" rel="noopener">${I.file} Liste complète des associations (Calaméo)</a></p>
+  <div class="dir-tools" style="margin-top:18px"><div class="filters" role="group" aria-label="Filtrer par thème" data-filter="asso"><button class="chip" type="button" data-cat="all" aria-pressed="true">Toutes <span class="n">${ASSOS.length}</span></button>${cats.map(c=>`<button class="chip" type="button" data-cat="${esc(c)}" aria-pressed="false">${c}</button>`).join("")}</div></div>
+  <div class="grid g2" id="assoList" style="margin-top:18px"></div>
+  ${manque("fiches des autres associations (seules 5 sont décrites sur le site actuel). Les photos de membres sont remplacées : accord des personnes à obtenir.")}${updated("11 mars 2026")}`;
+});
+function assoCard(a){ return `<article class="card dir-card"><span class="cat">${a.c}</span><h3>${a.n}</h3><p style="font-size:.9375rem">${a.d}</p>${a.p.map(([n,t])=>`<p>${n} · ${tel(t)}</p>`).join("")}${a.m?`<p>${a.m}</p>`:""}</article>`; }
+
+page("marees","loisirs","Horaires des marées","Pour la pêche à pied, la baignade et la navigation.",()=>`
+  <div class="grid g2">
+    <a class="card" href="https://www.encotentin.fr/marees/" rel="noopener" style="text-decoration:none;color:var(--fg)"><h3 style="color:var(--accent)">Horaires des marées à Créances</h3><p>Consulter les horaires sur encotentin.fr.</p></a>
+    <a class="card" href="https://www.pecheapied-loisir.fr/reglementation/manche/" rel="noopener" style="text-decoration:none;color:var(--fg)"><h3 style="color:var(--accent)">Pêche à pied de loisir</h3><p>Conseils pratiques et réglementation dans la Manche.</p></a>
+  </div>${updated("27 janvier 2026")}`);
+
+page("camping","loisirs","Camping des Dunes","Camping et village de gîtes au cœur des dunes, avec accès direct à la plage.",()=>`
+  <div class="two"><div class="a" style="display:flex;flex-direction:column;gap:16px">${photo("camping")}
+    <div class="prose"><p>Niché derrière les dunes, le camping propose 120 emplacements abrités et ombragés dans un cadre agréable et naturel. Baignade et farniente sur la plage de sable fin, accessible directement. À marée basse, pêche aux coques, couteaux et crevettes. Un spot de kitesurf se trouve à proximité.</p>${verif("nombre d'emplacements repris de l'accueil du site actuel.")}</div></div>
+    <aside class="b"><div class="card soft" style="gap:10px"><h2 style="font-size:var(--step-2)">VVF Villages – Les Dunes</h2><p>832 boulevard de la Mer<br>50710 Créances</p><p><a class="btn" href="https://campingcreances.fr/" rel="noopener">Site du camping</a></p>
+    ${verif("téléphone : 02 61 76 00 58 sur le site du camping, 02.33.46.31.86 sur le site de la mairie.")}
+    <p class="meta">Adresse vérifiée le 25/10/2026 : campingcreances.fr est le bon site. L'autre adresse, camping-creances.fr, n'est plus celle du camping.</p></div></aside></div>`);
+
+page("offices","loisirs","Offices de tourisme","Horaires des bureaux d'information touristique de Lessay et Pirou.",()=>`
+  <div class="table-box" style="max-width:900px"><table><thead><tr><th scope="col">Période</th><th scope="col">Lessay</th></tr></thead><tbody>
+  <tr><th scope="row">Novembre à janvier</th><td>Mardi, jeudi, vendredi : 9 h 30 – 12 h 30<br>Mercredi : 9 h 30 – 12 h 30 et 14 h – 17 h</td></tr>
+  <tr><th scope="row">Mars, avril, mai, septembre, octobre</th><td>Mardi, mercredi, vendredi : 9 h 30 – 12 h 30 et 14 h – 17 h 30<br>Jeudi : 9 h 30 – 12 h 30</td></tr>
+  <tr><th scope="row">Juin</th><td>Mardi, vendredi : 9 h 30 – 12 h 30 et 14 h – 18 h<br>Mercredi : 9 h 30 – 12 h 30 et à partir de 14 h<br>Jeudi, samedi : 9 h 30 – 12 h 30</td></tr>
+  <tr><th scope="row">Juillet, août</th><td>Lundi, mardi, mercredi, vendredi : 9 h 30 – 12 h 30 et 14 h – 18 h<br>Jeudi, samedi : 9 h 30 – 12 h 30</td></tr>
+  </tbody></table></div>
+  <div class="table-box" style="max-width:900px;margin-top:16px"><table><thead><tr><th scope="col">Période</th><th scope="col">Pirou</th></tr></thead><tbody>
+  <tr><th scope="row">Juillet, août</th><td>Lundi, mercredi, jeudi, vendredi : 9 h 30 – 13 h<br>Samedi, dimanche : 9 h 30 – 13 h et 15 h – 18 h</td></tr></tbody></table></div>
+  <p style="margin-top:14px">Côte Ouest Centre Manche Tourisme (Lessay) : ${tel("02.33.45.14.34")} · ${ext("http://www.tourisme-cocm.fr/","tourisme-cocm.fr")}</p>
+  ${verif("aucun horaire indiqué pour février ; heure de fin du mercredi en juin manquante ; page de janvier 2025.")}`);
+
+page("avoir","loisirs","À faire, à voir à Créances","Une commune millénaire entre mer, dunes et landes.",()=>`
+  <div style="display:flex;flex-direction:column;gap:28px">
+  <div class="two"><div class="a">${photo("plage","wide")}</div><div class="b prose"><h2>La plage</h2><p>5 km de plage de sable fin avec vue sur les îles anglo-normandes. Détente et baignades agréables.</p></div></div>
+  <div class="two"><div class="a">${photo("dunes","wide")}</div><div class="b prose"><h2>Sentiers de découverte</h2><p>2 circuits de randonnée à proximité du centre bourg : un parc de découverte des landes et un des dunes, avec aires de pique-nique.</p>${photo("lande")}</div></div>
+  <div class="grid g2">
+    <div class="card"><h3>La grotte, inaugurée le 16 mai 1929</h3><p>Éprouvés par leurs morts de la guerre de 1914-1918, les paroissiens, sous l'égide de l'abbé Paul PITON, érigent cette copie de la grotte de Lourdes, sur le site d'un ancien calvaire tombé lors de la tempête de 1910. Elle fut construite par des maçons de Martinvast. En 1986, la statue fut remplacée par une statue rapportée de Lourdes. Des cérémonies avec retraites aux flambeaux ont lieu les 15 août et 8 décembre.</p>${photo("")}</div>
+    <div class="card"><h3>Les églises</h3><p>La commune possède deux églises, dont l'une au village du Buisson, qui possède un vestige et des créations originales d'une Créançaise.</p>${photo("eglise")}</div>
+    <div class="card"><h3>Le pont de la Goutte</h3><p>Un lavoir y fut construit en 1908, à un peu plus d'1 km du bourg, sur la rivière de la Goutte. C'est l'un des deux lavoirs de Créances. Les femmes ne pouvaient pas l'utiliser lors des grandes marées, car l'eau de mer y pénétrait.</p>${photo("")}</div>
+    <div class="card"><h3>Le manoir de Bellée</h3><p>Un manoir privé, riche d'histoire, qui a accueilli une école d'agriculture, rappel du passé agricole et des traditions de Créances.</p>${photo("")}</div>
+  </div></div>${updated("4 avril 2017 (contenu ancien mais toujours valable a priori)")}`);
+
+page("carotte","loisirs","Fête de la Carotte","LA fête incontournable de Créances et de sa région.",()=>`
+  <div class="two"><div class="a prose">
+    ${manque("date de l'édition 2027 (la dernière édition annoncée a eu lieu le samedi 8 août 2026).")}
+    <p>Elle rassemble 30 000 visiteurs et 300 exposants. Un marché du terroir réunit au centre de la fête des artisans régionaux. On y déguste la très locale soupe à la graisse. Une association créançaise défile en tenue d'époque, au son de groupes de musique différents chaque année. Un concours de présentation légumière donne lieu à des réalisations très originales.</p>
+    <p>Restauration typique : saucisses ou gigot grillés, dans les rues ou sous un immense chapiteau.</p>
+    <p>La confrérie des « Mouögeous d'carottes de Crianches » (mangeurs de carottes de Créances) intronise chaque année un nouveau membre, qui jure de vanter et de défendre la carotte des sables de Créances toute sa vie. La journée se termine par un feu d'artifice.</p>
+    <p><strong>À savoir :</strong> les parkings sont gratuits.</p>
+  </div><aside class="b">${photo("")}<p class="meta" style="margin-top:8px">Photos de la fête : à choisir avec la mairie (personnes reconnaissables).</p></aside></div>${updated("22 avril 2026")}`);
+
+page("marches","loisirs","Marchés du terroir","Sur le parking de la plage, de 17 h à 20 h.",()=>`
+  <div class="card soft" style="max-width:560px"><p>Dates 2026 : vendredi 17 juillet et vendredi 14 août 2026.</p></div>${manque("dates 2027.")}${updated("22 avril 2026")}`);
+
+/* ---------- Économie ---------- */
+page("economie","economie","Économie","Le maraîchage, la zone d'activités et l'annuaire des professionnels.",()=>`
+  <div class="grid g3 hub">${hubCard("filiere","Carotte des sables, poireau, label Rouge et parc d'activités.")}${hubCard("annuaire","38 artisans et commerces, avec filtres et téléphones.")}</div>`);
+
+page("filiere","economie","L'économie de la commune","Un territoire traditionnellement maraîcher, en bordure de mer.",()=>`
+  <div class="two"><div class="a prose">
+    <p>Le pays de Créances a su tirer parti de son micro-climat et de ses sols sableux et fertiles pour produire des légumes d'exception, à l'origine d'un label Rouge. Cultivés dans les « mielles », petites parcelles à l'abri des dunes, carottes et poireaux ont une notoriété certaine.</p>
+    <p>Une centaine d'exploitations maraîchères existent à Créances, modernes ou traditionnelles. La Manche est le deuxième département producteur de carottes, dont la moitié est produite sur la commune (50 000 tonnes par an), et le premier producteur de poireaux (18 000 tonnes par an).</p>
+    <p>Agrial, GPLM, les Jardins de Créances et le syndicat des producteurs sont les principaux moteurs de la commercialisation, dans toute la France et à l'export. La carotte des sables, récoltée à la main, et le poireau font la spécialité de la ville.</p>
+    <h2 style="font-size:var(--step-2)">Le parc d'activités de la Côte Ouest (PACO)</h2>
+    <p>Une dizaine d'entreprises, principalement orientées vers les filières agricoles.</p>
+    ${verif("chiffres de production et nombre d'exploitations repris d'une page de février 2019.")}
+  </div><aside class="b">${photo("")}<p class="meta" style="margin-top:8px">Les photos de la filière (mielles, récolte sous la neige) font moins de 1 200 px : utilisables en vignette seulement.</p></aside></div>`);
+
+page("annuaire","economie","Artisans et commerces","Les professionnels de Créances, par catégorie.",()=>{
+  const all = ARTISANS.concat(COMMERCES);
+  const cats = [...new Set(all.map(e=>e.c))].sort((a,b)=>a.localeCompare(b,"fr"));
+  return `<div class="dir-tools">
+    <div class="filters" role="group" aria-label="Type" data-filter="type">
+      <button class="chip" type="button" data-type="all" aria-pressed="true">Tous <span class="n">${all.length}</span></button>
+      <button class="chip" type="button" data-type="Artisan" aria-pressed="false">Artisans <span class="n">${ARTISANS.length}</span></button>
+      <button class="chip" type="button" data-type="Commerce" aria-pressed="false">Commerces <span class="n">${COMMERCES.length}</span></button>
+    </div>
+    <label for="dirCat" style="font-weight:600;font-size:.9375rem">Catégorie
+      <select id="dirCat" style="display:block;margin-top:6px;font:inherit;padding:10px 12px;border:1px solid var(--muted);border-radius:6px;max-width:360px;width:100%;background:var(--bg);color:var(--fg)"><option value="all">Toutes les catégories</option>${cats.map(c=>`<option>${esc(c)}</option>`).join("")}</select>
+    </label>
+    <label for="dirQ" style="font-weight:600;font-size:.9375rem">Rechercher un nom<input id="dirQ" type="search" placeholder="ex. boulangerie, Navarre…" style="display:block;margin-top:6px"></label>
+    <p class="count" id="dirCount" aria-live="polite"></p>
+  </div>
+  <div class="grid g3" id="dirList" style="margin-top:12px"></div>
+  ${verif("liste des commerces non mise à jour depuis avril 2024 ; téléphone de l'auto-école manquant. Les logos d'entreprises ne sont pas repris.")}`;
+});
+function dirCard(e){ return `<article class="card dir-card"><span class="cat">${esc(e.c)}</span><h3>${esc(e.n)}</h3>${e.d?`<p style="font-size:.9375rem">${esc(e.d)}</p>`:""}${e.p.length?e.p.map(tel).join(" "):`<p class="meta">Téléphone : à compléter</p>`}${e.w?`<p>${ext(e.w,"Site web")}</p>`:""}</article>`; }
+
+/* ---------- Actualités ---------- */
+page("actualites","actualites","Actualités",`${NEWS.length} articles du site actuel, du plus récent au plus ancien.`,()=>`
+  <div style="max-width:860px">${NEWS.map(newsItem).join("")}</div>
+  <p class="meta" style="margin-top:14px">Les titres renvoient vers les articles du site actuel. Les articles antérieurs à 2024 sont signalés : la mairie décide s'ils sont archivés.</p>`);
+
+/* ---------- Pages légales ---------- */
+const legal = (t)=>`${manque(`texte « ${t} » à reprendre du site actuel ou à faire rédiger, puis à valider par la mairie. Aucun texte juridique n'est rédigé dans cette maquette.`)}`;
+page("mentions","infos","Mentions légales","",()=>`${legal("Mentions légales")}<div class="card soft" style="max-width:640px;margin-top:16px"><h3>Éléments relevés sur le site actuel (à mettre à jour)</h3><p>Éditeur : Mairie de Créances, 107 rue des écoles, 50710 Créances. Directeur de la publication : le maire. Hébergement : OVH. Photographies : Mairie de Créances.</p></div>`);
+page("confidentialite","infos","Politique de confidentialité","",()=>legal("Politique de confidentialité"));
+page("cookies","infos","Gestion des cookies","",()=>`${legal("Gestion des cookies")}<p class="meta" style="margin-top:12px">Cette maquette ne dépose aucun cookie.</p>`);
+page("plan","infos","Plan du site","Toutes les pages de la maquette.",()=>{
+  const by = {}; Object.values(P).forEach(p=>{ if(!p.sec) return; (by[p.sec]=by[p.sec]||[]).push(p); });
+  return `<div class="grid g3">${Object.keys(SECTIONS).filter(s=>by[s]).map(s=>`<div><h2 style="font-size:var(--step-2);margin-bottom:8px">${SECTIONS[s]}</h2><ul style="list-style:none;display:flex;flex-direction:column;gap:4px">${by[s].map(p=>`<li><a href="#${p.id}" data-go="${p.id}">${esc(p.title)}</a></li>`).join("")}</ul></div>`).join("")}</div>`;
+});
+page("recherche","infos","Recherche","",()=>`<div id="results"></div>`);
+
+/* ---------- Recherche ---------- */
+let INDEX = null, lastQuery = "";
+const norm = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+function buildIndex(){
+  const tmp = document.createElement("div");
+  INDEX = Object.values(P).filter(p=>!["recherche","plan"].includes(p.id)).map(p=>{ tmp.innerHTML = p.body(); return {id:p.id, title:p.title, sec:p.sec, lead:p.lead, text:norm(p.title+" "+p.lead+" "+tmp.textContent)}; });
+  ARTISANS.concat(COMMERCES).forEach(e=>INDEX.push({id:"annuaire", title:e.n, sec:"economie", lead:e.c+(e.d?" · "+e.d:""), text:norm(e.n+" "+e.c+" "+e.d)}));
+}
+function renderResults(q){
+  if(!INDEX) buildIndex();
+  const terms = norm(q).split(/\s+/).filter(Boolean);
+  const box = document.getElementById("results");
+  if(!terms.length){ box.innerHTML = `<p>Saisissez un mot dans la barre de recherche.</p>`; return; }
+  const hits = INDEX.map(r=>({r, s:terms.reduce((a,t)=>a+(r.text.includes(t)?1:0)+(norm(r.title).includes(t)?2:0),0)})).filter(h=>terms.every(t=>h.r.text.includes(t))).sort((a,b)=>b.s-a.s).slice(0,30);
+  box.innerHTML = `<p class="count" role="status">${hits.length} résultat${hits.length>1?"s":""} pour « ${esc(q)} »</p>` + (hits.length?`<ul class="results" style="margin-top:10px">${hits.map(({r})=>`<li><p class="meta">${SECTIONS[r.sec]||""}</p><h3><a href="#${r.id}" data-go="${r.id}">${esc(r.title)}</a></h3>${r.lead?`<p style="font-size:.9375rem">${esc(r.lead)}</p>`:""}</li>`).join("")}</ul>`:`<p style="margin-top:10px">Essayez un autre mot, ou consultez le <a href="#plan" data-go="plan">plan du site</a>.</p>`);
+}
+
+/* ---------- Rendu et navigation ---------- */
+const main = document.getElementById("contenu");
+function renderAlerts(){
+  document.getElementById("alerts").innerHTML = `<section class="alerts" aria-label="Alertes et avis"><div class="wrap">${ALERTS.map(a=>`<p class="alert"><span class="tag ${a.kind}">${a.label}</span><span>${a.html}</span></p>`).join("")}</div></section>`;
+}
+function render(id, opts){
+  opts = opts||{};
+  if(!P[id]) id = "accueil";
+  const p = P[id];
+  document.querySelectorAll("nav.main a[data-sec]").forEach(a=>{ if(a.dataset.sec===p.sec) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current"); });
+  document.getElementById("alerts").hidden = !(id==="accueil");
+  if(id==="accueil"){ main.innerHTML = p.body(); }
+  else {
+    const secLink = p.sec && P[p.sec] && p.sec!==id ? `<li><a href="#${p.sec}" data-go="${p.sec}">${SECTIONS[p.sec]}</a></li>` : "";
+    main.innerHTML = `<div class="wrap"><nav class="crumbs" aria-label="Fil d'Ariane"><ol><li><a href="#accueil" data-go="accueil">Accueil</a></li>${secLink}<li aria-current="page">${esc(p.title)}</li></ol></nav>
+      <div class="page-head"><h1>${esc(p.title)}</h1>${p.lead?`<p class="lead">${p.lead}</p>`:""}</div>
+      <div>${p.body()}</div></div>`;
+  }
+  document.title = (id==="accueil"?"Créances — maquette de refonte":p.title+" — Créances (maquette)");
+  wire(id);
+  if(!opts.initial){ window.scrollTo(0,0); const h = main.querySelector("h1"); if(h){ h.setAttribute("tabindex","-1"); h.focus({preventScroll:true}); } }
+  const nav = document.getElementById("mainNav"); nav.classList.remove("open"); document.getElementById("menuBtn").setAttribute("aria-expanded","false");
+}
+function go(id){ try{ history.pushState(null,"","#"+id); }catch(e){} render(id); }
+
+function wire(id){
+  if(id==="agenda"){
+    const list = document.getElementById("agendaList");
+    const show = (m)=>{
+      document.querySelectorAll("[data-month]").forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.month===String(m))));
+      const months = m==="all" ? [...new Set(AGENDA.map(e=>+e.d.slice(5,7)-1))] : [+m];
+      list.innerHTML = months.map(mm=>{ const evs = AGENDA.filter(e=>+e.d.slice(5,7)-1===mm); return `<section class="section" style="padding-top:12px"><h2 style="font-size:var(--step-2)">${MONTHS_L[mm][0].toUpperCase()+MONTHS_L[mm].slice(1)} 2026</h2><ul style="list-style:none;display:flex;flex-direction:column;gap:12px">${evs.map(evItem).join("")}</ul></section>`; }).join("");
+    };
+    document.querySelectorAll("[data-month]").forEach(b=>b.addEventListener("click",()=>show(b.dataset.month)));
+    const pressed = document.querySelector('[data-month][aria-pressed="true"]'); show(pressed?pressed.dataset.month:"all");
+  }
+  if(id==="associations"){
+    const list = document.getElementById("assoList");
+    const show = (c)=>{ document.querySelectorAll("[data-cat]").forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.cat===c))); list.innerHTML = ASSOS.filter(a=>c==="all"||a.c===c).map(assoCard).join(""); };
+    document.querySelectorAll("[data-cat]").forEach(b=>b.addEventListener("click",()=>show(b.dataset.cat)));
+    show("all");
+  }
+  if(id==="annuaire"){
+    const all = ARTISANS.concat(COMMERCES); let type="all";
+    const sel = document.getElementById("dirCat"), q = document.getElementById("dirQ"), list = document.getElementById("dirList"), cnt = document.getElementById("dirCount");
+    const show = ()=>{
+      const t = norm(q.value.trim());
+      const rows = all.filter(e=>(type==="all"||e.type===type)&&(sel.value==="all"||e.c===sel.value)&&(!t||norm(e.n+" "+e.c+" "+e.d).includes(t)));
+      list.innerHTML = rows.map(dirCard).join("") || `<p>Aucun professionnel ne correspond. <button class="chip" type="button" id="dirReset">Effacer les filtres</button></p>`;
+      cnt.textContent = rows.length+" professionnel"+(rows.length>1?"s":"")+" affiché"+(rows.length>1?"s":"");
+      const r = document.getElementById("dirReset"); if(r) r.addEventListener("click",()=>{ type="all"; sel.value="all"; q.value=""; document.querySelectorAll("[data-type]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.type==="all"))); show(); });
+    };
+    document.querySelectorAll("[data-type]").forEach(b=>b.addEventListener("click",()=>{ type=b.dataset.type; document.querySelectorAll("[data-type]").forEach(x=>x.setAttribute("aria-pressed",String(x===b))); show(); }));
+    sel.addEventListener("change",show); q.addEventListener("input",show); show();
+  }
+  if(id==="contact"){
+    const f = document.getElementById("contactForm"), msg = document.getElementById("formMsg");
+    f.addEventListener("submit",(e)=>{ e.preventDefault();
+      const bad = [...f.querySelectorAll("[required]")].filter(el=>el.type==="checkbox"?!el.checked:!el.value.trim() || (el.type==="email" && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(el.value)));
+      f.querySelectorAll("[aria-invalid]").forEach(el=>el.removeAttribute("aria-invalid"));
+      msg.hidden = false;
+      if(bad.length){ bad.forEach(el=>el.setAttribute("aria-invalid","true")); msg.textContent = `Il manque ${bad.length} champ${bad.length>1?"s":""} obligatoire${bad.length>1?"s":""} (marqués d'un astérisque).`; bad[0].focus(); return; }
+      msg.textContent = "Maquette : le message n'a pas été envoyé. Sur le site officiel, ce formulaire sera relié à la mairie.";
+    });
+  }
+  if(id==="recherche") renderResults(lastQuery);
+}
+
+document.addEventListener("click",(e)=>{
+  const a = e.target.closest("a[data-go]");
+  if(!a || e.metaKey || e.ctrlKey) return;
+  e.preventDefault(); go(a.dataset.go);
+});
+window.addEventListener("popstate",()=>render((location.hash||"#accueil").slice(1)));
+window.addEventListener("hashchange",()=>render((location.hash||"#accueil").slice(1)));
+document.getElementById("searchForm").addEventListener("submit",(e)=>{ e.preventDefault(); lastQuery = document.getElementById("q").value; go("recherche"); });
+document.getElementById("menuBtn").addEventListener("click",(e)=>{ const nav = document.getElementById("mainNav"); const open = nav.classList.toggle("open"); e.currentTarget.setAttribute("aria-expanded",String(open)); e.currentTarget.setAttribute("aria-label", open?"Fermer le menu":"Ouvrir le menu"); });
+
+renderAlerts();
+render((location.hash||"#accueil").slice(1), {initial:true});
+})();
+</script>
+
+</body>
+</html>
