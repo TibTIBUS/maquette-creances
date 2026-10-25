@@ -10,3 +10,4 @@ Elle n'a été ni demandée ni validée par la mairie.
 - Le formulaire de contact n'envoie rien.
 - Le site demande aux moteurs de recherche de ne pas l'indexer (`robots.txt`, balise `noindex`).
 - Un **assistant questions-réponses** (bulle en bas à droite) répond uniquement à partir des pages du site. Version sans IA sur GitHub Pages ; version IA prête à brancher dans [`chatbot-ia/`](chatbot-ia/README.md).
+- Les actualités sont illustrées par des **photos d'illustration Unsplash** (licence Unsplash, usage gratuit), créditées sous chaque article. Elles ne montrent pas Créances.

@@ -169,9 +169,11 @@ tr:last-child td{border-bottom:0}
 @media (max-width:860px){.two{grid-template-columns:1fr}.two>.a,.two>.b{grid-column:auto}}
 .news-item{display:flex;gap:16px;padding-block:16px;border-top:1px solid var(--line)}
 .news-item:last-child{border-bottom:1px solid var(--line)}
-.news-item .thumb{flex:0 0 120px;height:84px;border-radius:6px;background:var(--soft2);display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.news-item .thumb{flex:0 0 168px;height:112px;border-radius:8px;background:var(--soft2);display:flex;align-items:center;justify-content:center;color:var(--muted);overflow:hidden}
+.news-item .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.credit{font-size:.75rem;color:var(--muted)}
 .news-item h3 a{color:var(--fg);text-decoration:none}.news-item h3 a:hover{color:var(--accent);text-decoration:underline}
-@media (max-width:520px){.news-item .thumb{display:none}}
+@media (max-width:520px){.news-item{flex-direction:column}.news-item .thumb{flex:none;width:100%;height:auto;aspect-ratio:16/9}}
 .ev{display:flex;gap:14px;align-items:flex-start}
 .date{flex:0 0 60px;text-align:center;border:2px solid var(--accent);border-radius:8px;padding:6px 0;line-height:1.05;color:var(--fg)}
 .date b{display:block;font-size:1.25rem;font-weight:800}
@@ -398,6 +400,10 @@ const NEWS = [
   {d:"2017-02-28", t:"Les manifestations", x:"Consultez la page des manifestations.", u:"https://ville-creances.fr/2017/02/28/les-manifestations/"}
 ];
 
+/* Photos d'illustration (Unsplash, licence gratuite) et photos de la commune, dans l'ordre de NEWS */
+const ILLU = [["eau","Jacek Dylag"],["brouette","Annie Spratt"],["croix","Ruben Ortega"],["vache","Csaba Gyulavári"],["voilier","Kristel Hayes"],["telephone","personalgraphic.com"],["echelle","Milivoj Kuhar"],["haie","Zuska Stozicka"],["chantier","GN Group"],["pins","Gustav Gullstrand"],["fibre","Kirill Sh"],["chemin","Maksim Shutov"],["telfixe","Alexander Andrews"],["fibre","Kirill Sh"],["cles","Jakub Żerdzicki"],["compost","Frank Thiemonge"],["chambre","Howard Walsh"],["outils","Sam Clarke"],["drapeau","Anthony Choren"],["@bourg",""],["repas","Ella Olsson"],["@fleurs",""]];
+NEWS.forEach((n,i)=>{ const [k,by] = ILLU[i]||[]; if(!k) return; if(k[0]==="@"){ n.img = `img/${k.slice(1)}-640.webp`; n.local = true; } else { n.img = `img/illu-${k}-640.webp`; n.by = by; } });
+
 /* Calendrier des fêtes 2026 (page Manifestations) */
 const AGENDA = [
  ["2026-01-10","18 h","Vœux du Maire","Espace intergénérationnel"],
@@ -605,7 +611,9 @@ page("accueil","","Accueil","",()=>{
 });
 function newsItem(n){
   const old = n.d < "2024-01-01";
-  return `<article class="news-item"><div class="thumb" aria-hidden="true">${I.file}</div><div style="display:flex;flex-direction:column;gap:4px;min-width:0"><p class="meta"><time datetime="${n.d}">${fmt(n.d)}</time>${old?` · <span class="tag old">Ancien, à archiver ?</span>`:""}</p><h3><a href="${n.u}" rel="noopener">${esc(n.t)}</a></h3>${n.x?`<p style="font-size:.9375rem">${esc(n.x)}</p>`:""}</div></article>`;
+  const thumb = n.img ? `<div class="thumb"><img src="${n.img}" alt="" loading="lazy" decoding="async"></div>` : `<div class="thumb" aria-hidden="true">${I.file}</div>`;
+  const credit = n.by ? `<p class="credit">Photo d'illustration : ${esc(n.by)} / Unsplash</p>` : (n.local ? `<p class="credit">Photo : commune de Créances</p>` : "");
+  return `<article class="news-item">${thumb}<div style="display:flex;flex-direction:column;gap:4px;min-width:0"><p class="meta"><time datetime="${n.d}">${fmt(n.d)}</time>${old?` · <span class="tag old">Ancien, à archiver ?</span>`:""}</p><h3><a href="${n.u}" rel="noopener">${esc(n.t)}</a></h3>${n.x?`<p style="font-size:.9375rem">${esc(n.x)}</p>`:""}${credit}</div></article>`;
 }
 function evItem(e){
   const nodate = e.d.endsWith("-00"); const d = new Date((nodate?e.d.slice(0,8)+"01":e.d)+"T12:00:00");
