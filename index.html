@@ -223,6 +223,28 @@ footer.site a{color:var(--band-fg)}
 footer.site b{color:var(--band-fg);font-size:1.0625rem}
 footer.site ul{list-style:none;display:flex;flex-direction:column;gap:4px}
 .label-ph{display:inline-block;border:1px dashed var(--band-muted);border-radius:6px;padding:8px 12px;font-size:.8125rem}
+/* Assistant */
+.bot-btn{position:fixed;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:8px;min-height:52px;padding:12px 18px;border:0;border-radius:999px;background:var(--accent);color:var(--accent-fg);font:inherit;font-weight:700;box-shadow:0 6px 20px rgba(15,42,61,.25);cursor:pointer}
+.bot-btn:hover{background:var(--accent-hover)}
+.bot-panel{position:fixed;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(80px + env(safe-area-inset-bottom,0px));z-index:45;width:min(400px,calc(100vw - 32px));max-height:min(620px,calc(100vh - 120px));display:flex;flex-direction:column;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 40px rgba(15,42,61,.28);overflow:hidden}
+.bot-panel[hidden]{display:none!important}
+.bot-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;background:var(--band);color:var(--band-fg)}
+.bot-head h2{font-size:1.0625rem}
+.bot-head button{width:40px;height:40px;border:0;border-radius:8px;background:transparent;color:var(--band-fg);font-size:1.5rem;line-height:1;cursor:pointer}
+.bot-note{font-size:.75rem;color:var(--muted);padding:8px 14px;border-bottom:1px solid var(--line);background:var(--soft)}
+.bot-log{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;min-height:160px}
+.msg{max-width:92%;padding:10px 12px;border-radius:12px;font-size:.9375rem;line-height:1.5;overflow-wrap:anywhere}
+.msg.me{align-self:flex-end;background:var(--accent);color:var(--accent-fg);border-bottom-right-radius:4px}
+.msg.bot{align-self:flex-start;background:var(--soft);border:1px solid var(--line);border-bottom-left-radius:4px;display:flex;flex-direction:column;gap:6px}
+.msg.bot .src{font-size:.8125rem;font-weight:600}
+.msg.bot mark{background:var(--check-bg);color:inherit;padding:0 2px;border-radius:2px}
+.msg.bot .also{font-size:.8125rem;color:var(--muted)}
+.bot-sugg{display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 10px}
+.bot-sugg button{font:inherit;font-size:.8125rem;padding:6px 10px;min-height:34px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer}
+.bot-form{display:flex;gap:8px;padding:10px 14px 14px;border-top:1px solid var(--line)}
+.bot-form input{flex:1;min-width:0;font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--muted);border-radius:8px;background:var(--bg);color:var(--fg)}
+.bot-form button{font:inherit;font-weight:700;padding:0 14px;min-height:44px;border:0;border-radius:8px;background:var(--accent);color:var(--accent-fg);cursor:pointer}
+@media (max-width:520px){.bot-btn span{display:none}.bot-btn{padding:14px}.bot-panel{left:calc(8px + env(safe-area-inset-left,0px));right:calc(8px + env(safe-area-inset-right,0px));width:auto;bottom:calc(76px + env(safe-area-inset-bottom,0px));max-height:calc(100vh - 110px)}}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 </style>
 
@@ -280,6 +302,15 @@ footer.site ul{list-style:none;display:flex;flex-direction:column;gap:4px}
     </ul></nav>
   </div>
 </footer>
+
+<button id="botBtn" class="bot-btn" type="button" aria-expanded="false" aria-controls="botPanel" aria-label="Poser une question à l'assistant"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg><span>Une question ?</span></button>
+<section id="botPanel" class="bot-panel" role="dialog" aria-labelledby="botTitle" hidden>
+  <div class="bot-head"><h2 id="botTitle">Assistant de Créances</h2><button id="botClose" type="button" aria-label="Fermer l'assistant">×</button></div>
+  <p class="bot-note">Démonstration. Je réponds uniquement avec les informations de ce site, sans rien inventer. Ne saisissez pas de données personnelles.</p>
+  <div id="botLog" class="bot-log" aria-live="polite"></div>
+  <div id="botSugg" class="bot-sugg" aria-label="Suggestions"></div>
+  <form id="botForm" class="bot-form"><label class="vh" for="botQ">Votre question</label><input id="botQ" type="text" autocomplete="off" placeholder="Ex. : horaires de la déchetterie"><button type="submit">Envoyer</button></form>
+</section>
 
 <script>
 (function(){
@@ -1059,6 +1090,124 @@ window.addEventListener("popstate",()=>render((location.hash||"#accueil").slice(
 window.addEventListener("hashchange",()=>render((location.hash||"#accueil").slice(1)));
 document.getElementById("searchForm").addEventListener("submit",(e)=>{ e.preventDefault(); lastQuery = document.getElementById("q").value; go("recherche"); });
 document.getElementById("menuBtn").addEventListener("click",(e)=>{ const nav = document.getElementById("mainNav"); const open = nav.classList.toggle("open"); e.currentTarget.setAttribute("aria-expanded",String(open)); e.currentTarget.setAttribute("aria-label", open?"Fermer le menu":"Ouvrir le menu"); });
+
+/* ---------- Assistant (sans IA : recherche dans les contenus du site) ---------- */
+const STOP = ("a ai as au aux avec c ca ce ces cet cette d dans de des du elle elles en est et eux il ils j je l la le les leur leurs lui m ma mais me meme mes moi mon n ne nos notre nous on ou par pas pour qu que qui quoi s sa se ses son sur t ta te tes toi ton tu un une vos votre vous y "+
+ "est-ce estce quel quelle quels quelles comment combien quand faut faire fait peut peux puis-je puisje sont etre avoir ont bonjour merci svp stp plait voudrais veux voudrait savoir connaitre dire trouver info infos information informations "+
+ "creance creances commune ville village ici chez lors aussi tout tous toute toutes plus tres bien "+
+ "jeter deposer aller venir mettre prendre obtenir demander renouveler chercher besoin possible veux voudrai aimerai pouvez pourriez donner indiquer");
+const STOPSET = new Set(STOP.split(/\s+/));
+const SYN = {
+ poubelle:["dechetterie","dechet"], ordure:["dechetterie","dechet"], dechet:["dechetterie"], encombrant:["dechetterie"], decheterie:["dechetterie"], dechetterie:["dechetterie"], tri:["dechetterie","tri"],
+ manger:["cantine","repas","restaurant","scolaire"], repas:["cantine","repas"], inscrire:["inscription","inscrire"], inscription:["inscription"], liste:["liste"], habitant:["habitant"], menu:["cantine","menu"], cantine:["cantine","restaurant","scolaire","repas"], restauration:["cantine","restauration"],
+ ouvert:["horaire","ouverture"], ouverte:["horaire","ouverture"], ouvre:["horaire","ouverture"], ferme:["horaire","ferme"], fermeture:["horaire","fermeture"], heure:["horaire","heure"], horaire:["horaire"], ouverture:["horaire","ouverture"],
+ telephone:["tel","telephone"], numero:["tel","numero"], appeler:["tel"], joindre:["tel","contact"], contacter:["contact","tel"], mail:["mail","courriel","accueil"], email:["mail","accueil"],
+ louer:["location","salle"], reserver:["reservation","salle"], reservation:["reservation"], fete:["fete"],
+ cni:["identite","carte"], passeport:["passeport","identite"], identite:["identite"],
+ voter:["electorale","inscription"], vote:["electorale"], election:["electorale","election"], electoral:["electorale"],
+ docteur:["medecin"], medecin:["medecin"], infirmiere:["infirmiere"], urgence:["urgence"], pompier:["pompier"], samu:["samu"], gendarme:["gendarmerie"], police:["gendarmerie"],
+ bus:["nomad","car","transport"], car:["nomad","transport"], transport:["transport","nomad"],
+ baignade:["plage","baignade"], mer:["mer","plage"], maree:["maree"],
+ internet:["fibre"], fibre:["fibre"],
+ garderie:["periscolaire","loisir"], periscolaire:["periscolaire"], ado:["jeune"], adolescent:["jeune"], jeune:["jeune"],
+ livre:["bibliotheque","livre"], mediatheque:["bibliotheque"], bibliotheque:["bibliotheque"],
+ permi:["urbanisme","permis"], construire:["urbanisme","construction"], travaux:["travaux","urbanisme"],
+ tombe:["cimetiere","concession"], concession:["concession","cimetiere"], defunt:["defunt","cimetiere"],
+ boulanger:["boulangerie"], pain:["boulangerie"], coiffeur:["coiffure"], coiffeuse:["coiffure"], plombier:["plomberie"], macon:["maconnerie"], menuisier:["menuiserie"], boucher:["boucherie"], fleur:["fleuriste","fleuri"], banque:["banque"], hotel:["hebergement","escale"], gite:["gite","hebergement"], dormir:["hebergement","camping"], tabac:["tabac"], restaurant:["restaurant","creperie"],
+ prix:["prix","tarif"], tarif:["tarif","prix"], cout:["prix","tarif"], combien:["prix","tarif"],
+ ecole:["ecole"], maternelle:["maternelle","ecole"], primaire:["primaire","ecole"],
+ maire:["maire"], elu:["adjoint","conseiller"], adjoint:["adjoint"], conseil:["conseil"], compte:["compte"],
+ association:["association"], club:["club"], sport:["sport"], foot:["football"], football:["football"], tennis:["tennis"], petanque:["petanque"]
+};
+const stem = w => (w.length>3 && /[sx]$/.test(w)) ? w.slice(0,-1) : w;
+const SYNS = {}; Object.keys(SYN).forEach(k=>{ SYNS[stem(k)] = SYN[k].map(stem); });
+const PHONEQ = new Set(["tel","telephone","numero","appeler","joindre","contacter"]);
+const toks = s => norm(s).replace(/[^a-z0-9]+/g," ").split(" ").filter(w=>w.length>1 && !STOPSET.has(w)).map(stem).filter(w=>!STOPSET.has(w));
+let KB = null, VOCAB = null;
+function buildKB(){
+  const tmp = document.createElement("div"); const kb = [];
+  const add = (page, title, text) => { text = text.replace(/\s+/g," ").trim(); if(text.length<15) return; kb.push({page, pageTitle:P[page].title, title, text}); };
+  Object.values(P).forEach(p=>{
+    if(["recherche","plan","mentions","confidentialite","cookies","annuaire","associations","agenda","actualites","mairie","vivre","enfance","loisirs","economie"].includes(p.id)) return;
+    tmp.innerHTML = p.body();
+    tmp.querySelectorAll(".ph, .tag, figure").forEach(e=>e.remove());
+    tmp.querySelectorAll("br").forEach(b=>b.replaceWith(" / "));
+    tmp.querySelectorAll(".meta").forEach(e=>{ if(/Contenu repris/.test(e.textContent)) e.remove(); });
+    let title = p.title, parts = [], len = 0;
+    const flush = () => { if(parts.length) add(p.id, title, parts.join(" ")); parts = []; len = 0; };
+    tmp.querySelectorAll("h1,h2,h3,summary,p,li,tr,dl,.card").forEach(el=>{
+      if(/^(H1|H2|H3|SUMMARY)$/.test(el.tagName)){ flush(); title = el.textContent.trim(); return; }
+      if(el.classList.contains("card") && el.querySelector("h1,h2,h3,p,li,tr,dl")) return;
+      if(el.parentElement && el.parentElement.closest("li,tr,p,dl,.card:not(:has(h1,h2,h3,p,li,tr,dl))")) return;
+      let t;
+      if(el.tagName==="TR") t = [...el.children].map(c=>c.textContent.trim()).join(" : ").replace(/ : /," : ");
+      else if(el.tagName==="DL") t = [...el.querySelectorAll("dt")].map(dt=>dt.textContent.trim()+" : "+(dt.nextElementSibling?dt.nextElementSibling.textContent.trim():"")).join(" ; ");
+      else if(el.classList.contains("card")) t = [...el.children].map(c=>c.textContent.trim()).filter(Boolean).join(" : ");
+      else t = el.textContent;
+      t = t.replace(/\s+/g," ").trim(); if(!t) return; if(/^(TR|DL)$/.test(el.tagName) || el.classList.contains("card")) t += ".";
+      if(len + t.length > 700) flush();
+      parts.push(t); len += t.length;
+    });
+    flush();
+  });
+  ARTISANS.concat(COMMERCES).forEach(e=>add("annuaire", e.n, `${e.n} (${e.type==="Artisan"?"artisan":"commerce"}, ${e.c}). ${e.d||""} ${e.p.length?"Tél. "+e.p.join(" ou "):"Téléphone non indiqué."}${e.w?" Site : "+e.w:""}`));
+  ASSOS.forEach(a=>add("associations", a.n, `${a.n} (${a.c}). ${a.d} Contact : ${a.p.map(([n,t])=>n+", "+t).join(" ; ")}.`));
+  AGENDA.forEach(e=>{ if(!e.d.endsWith("-00")) add("agenda", e.t, `${e.t} : ${fmt(e.d)}${e.h?", "+e.h:""}${e.l?", "+e.l:""}.`); });
+  NEWS.forEach(n=>add("actualites", n.t, `${n.t} (publié le ${fmt(n.d)}). ${n.x}`));
+  ELUS.forEach(([r,n,d])=>add("equipe", `${r} : ${n}`, `${r} de Créances : ${n}.${d?" Délégation : "+d+".":""}`));
+  add("equipe","Conseillers municipaux","Conseillers municipaux : "+CONS.join(", ")+".");
+  kb.forEach((c,i)=>{ c.i=i; c.tok = new Set(toks(c.text+" "+c.title+" "+c.pageTitle+" "+(P[c.page].lead||""))); if(/\d{2}[ .]\d{2}[ .]\d{2}[ .]\d{2}/.test(c.text)) c.tok.add("tel"); c.tt = new Set(toks(c.title+" "+c.pageTitle)); c.w = (c.page==="agenda"||c.page==="actualites") ? 0.7 : (c.page==="equipe" ? 1.2 : 1); });
+  KB = kb; VOCAB = [...new Set(kb.flatMap(c=>[...c.tok]))];
+  return kb;
+}
+function groupFor(q){
+  const base = PHONEQ.has(q) ? ["tel"] : [q].concat(SYNS[q]||[]);
+  const words = new Set(), exact = new Set();
+  base.forEach(b=>VOCAB.forEach(v=>{ if(v===b){ words.add(v); exact.add(v); } else if(b.length>=5 && v.length>=5 && v.startsWith(b.slice(0,Math.max(5,b.length-2)))) words.add(v); }));
+  return {q, words, exact};
+}
+function ask(question){
+  if(!KB) buildKB();
+  const nq = norm(question);
+  const urgent = /\b(urgence|urgent|samu|pompier|accident|malaise|blesse|incendie|feu)\b/.test(nq);
+  const urgentMsg = urgent ? `<p><strong>En cas d'urgence vitale, appelez le 15 (SAMU) ou le 112.</strong></p>` : "";
+  if(/\b(agenda|manifestation|evenement|sortir|sortie|animation|prochain|que faire)/.test(nq) && !/fete de la carotte|marche/.test(nq)){
+    const up = AGENDA.filter(e=>!e.d.endsWith("-00") && new Date(e.d+"T23:59:00")>=TODAY).slice(0,3);
+    if(up.length) return `${urgentMsg}<p>Les prochains rendez-vous à Créances :</p><ul style="padding-left:1.1em">${up.map(e=>`<li>${fmt(e.d)}${e.h?", "+esc(e.h):""} : ${esc(e.t)}${e.l?" ("+esc(e.l)+")":""}</li>`).join("")}</ul><p class="src">Source : <a href="#agenda" data-go="agenda">Agenda des manifestations</a></p>`;
+  }
+  const groups = [...new Set(toks(question))].map(groupFor);
+  if(!groups.length) return `<p>Posez-moi une question sur Créances : une démarche, un horaire, un service, une adresse…</p>`;
+  const N = KB.length;
+  const live = groups.filter(g=>g.words.size);
+  const need = groups.length===1 ? 1 : groups.length===2 ? 2 : Math.ceil(groups.length*0.6);
+  const refuse = `${urgentMsg}<p>Je ne trouve pas cette information sur le site de la commune. Je réponds uniquement aux questions sur Créances dont la réponse figure sur ce site.</p><p>Pour toute autre demande, contactez la mairie : 02 33 46 30 18, ou <a href="#contact" data-go="contact">écrivez-lui</a>.</p>`;
+  if(live.length < need) return refuse;
+  live.forEach(g=>{ const df = KB.filter(c=>[...g.words].some(w=>c.tok.has(w))).length; g.idf = Math.log(1 + N/Math.max(1,df)); });
+  const scored = KB.map(c=>{ let s=0, hit=0; live.forEach(g=>{ const inT=[...g.words].some(w=>c.tok.has(w)); if(inT){ hit++; const ex=[...g.exact].some(w=>c.tok.has(w)); s+=g.idf*(ex?1:0.6); if([...g.words].some(w=>c.tt.has(w))) s+=g.idf*0.8; } }); return {c,s:s*c.w,hit}; })
+    .filter(x=>x.hit>=need).sort((a,b)=>b.s-a.s || a.c.i-b.c.i);
+  if(!scored.length) return refuse;
+  const best = scored[0].c;
+  const allWords = new Set(live.flatMap(g=>[...g.words]));
+  const hl = (t) => esc(t).replace(/[A-Za-zÀ-ÿ0-9']+/g, m => allWords.has(stem(norm(m))) ? `<mark>${m}</mark>` : m);
+  let text = best.text; if(text.length>520){ text = text.slice(0,520).replace(/\s\S*$/,"")+"…"; }
+  const others = []; const seen = new Set([best.page+"|"+best.title]);
+  for(const x of scored.slice(1)){ const k=x.c.page+"|"+x.c.title; if(seen.has(k)) continue; seen.add(k); others.push(x.c); if(others.length===2) break; }
+  return `${urgentMsg}<p><strong>${esc(best.title)}</strong></p><p>${hl(text)}</p><p class="src">Source : <a href="#${best.page}" data-go="${best.page}">${esc(best.pageTitle)}</a></p>${others.length?`<p class="also">Voir aussi : ${others.map(o=>`<a href="#${o.page}" data-go="${o.page}">${esc(o.title)}</a>`).join(" · ")}</p>`:""}`;
+}
+window.__creancesAsk = ask;
+window.__creancesKB = () => (KB||buildKB()).map(({page,pageTitle,title,text})=>({page,pageTitle,title,text}));
+(function initBot(){
+  const btn = document.getElementById("botBtn"), panel = document.getElementById("botPanel"), log = document.getElementById("botLog"), form = document.getElementById("botForm"), input = document.getElementById("botQ"), sugg = document.getElementById("botSugg");
+  const SUGG = ["Horaires de la mairie","Horaires de la déchetterie","Prix de la cantine","Prochaines manifestations","Numéros d'urgence","Louer une salle"];
+  const say = (html, who) => { const d = document.createElement("div"); d.className = "msg "+who; d.innerHTML = html; log.appendChild(d); log.scrollTop = log.scrollHeight; };
+  const open = (v) => { panel.hidden = !v; btn.setAttribute("aria-expanded", String(v)); if(v){ if(!log.children.length) say("<p>Bonjour ! Posez-moi une question sur la commune de Créances. Je réponds avec les informations de ce site et je vous indique la page où les trouver.</p>","bot"); input.focus(); } else btn.focus(); };
+  sugg.innerHTML = SUGG.map(s=>`<button type="button">${esc(s)}</button>`).join("");
+  sugg.addEventListener("click", e=>{ const b = e.target.closest("button"); if(!b) return; input.value = b.textContent; form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event("submit",{cancelable:true})); });
+  btn.addEventListener("click", ()=>open(panel.hidden));
+  document.getElementById("botClose").addEventListener("click", ()=>open(false));
+  panel.addEventListener("keydown", e=>{ if(e.key==="Escape") open(false); });
+  form.addEventListener("submit", e=>{ e.preventDefault(); const q = input.value.trim(); if(!q) return; say(esc(q),"me"); input.value = ""; say(ask(q),"bot"); sugg.hidden = true; });
+})();
 
 renderAlerts();
 render((location.hash||"#accueil").slice(1), {initial:true});
