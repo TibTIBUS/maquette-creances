@@ -1,0 +1,10 @@
+# Utilisé seulement si le dépôt est déployé sur Netlify (version avec assistant IA).
+# GitHub Pages ignore ce fichier.
+[build]
+  publish = "."
+  functions = "chatbot-ia/netlify/functions"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"

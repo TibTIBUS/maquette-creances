@@ -9,3 +9,4 @@ Elle n'a été ni demandée ni validée par la mairie.
 - Le logo et les photos appartiennent à la commune ou à leurs auteurs : droits de réutilisation non établis. Ils seront retirés sur simple demande.
 - Le formulaire de contact n'envoie rien.
 - Le site demande aux moteurs de recherche de ne pas l'indexer (`robots.txt`, balise `noindex`).
+- Un **assistant questions-réponses** (bulle en bas à droite) répond uniquement à partir des pages du site. Version sans IA sur GitHub Pages ; version IA prête à brancher dans [`chatbot-ia/`](chatbot-ia/README.md).

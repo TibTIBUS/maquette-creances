@@ -1206,7 +1206,19 @@ window.__creancesKB = () => (KB||buildKB()).map(({page,pageTitle,title,text})=>(
   btn.addEventListener("click", ()=>open(panel.hidden));
   document.getElementById("botClose").addEventListener("click", ()=>open(false));
   panel.addEventListener("keydown", e=>{ if(e.key==="Escape") open(false); });
-  form.addEventListener("submit", e=>{ e.preventDefault(); const q = input.value.trim(); if(!q) return; say(esc(q),"me"); input.value = ""; say(ask(q),"bot"); sugg.hidden = true; });
+  const AI = (()=>{ try{ return /\.netlify\.app$/.test(location.hostname) ? "/api/assistant" : ""; }catch(e){ return ""; } })();
+  if(AI) panel.querySelector(".bot-note").textContent = "Démonstration avec IA. Je réponds uniquement avec les informations de ce site et j'indique la page source. Ne saisissez pas de données personnelles.";
+  form.addEventListener("submit", async e=>{ e.preventDefault(); const q = input.value.trim(); if(!q) return; say(esc(q),"me"); input.value = ""; sugg.hidden = true;
+    if(!AI){ say(ask(q),"bot"); return; }
+    const wait = document.createElement("div"); wait.className = "msg bot"; wait.textContent = "…"; log.appendChild(wait); log.scrollTop = log.scrollHeight;
+    try{
+      const r = await fetch(AI,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({question:q})});
+      if(!r.ok) throw new Error(r.status);
+      const d = await r.json();
+      wait.innerHTML = `<p>${esc(d.answer)}</p>${(d.sources||[]).length?`<p class="src">Source : ${d.sources.map(s=>`<a href="#${esc(s.page)}" data-go="${esc(s.page)}">${esc(s.title)}</a>`).join(" · ")}</p>`:""}`;
+    }catch(err){ wait.innerHTML = ask(q); }
+    log.scrollTop = log.scrollHeight;
+  });
 })();
 
 renderAlerts();
