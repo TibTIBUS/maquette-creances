@@ -2,7 +2,7 @@
 
 **Ceci n'est pas le site officiel de la commune de Créances.** Le site officiel est https://ville-creances.fr/.
 
-Maquette de proposition réalisée par Localia (Thibaut Marie) le 25 octobre 2026, à partir des contenus publics du site actuel.
+Maquette de proposition réalisée par Thibaut Marie le 25 octobre 2026, à partir des contenus publics du site actuel.
 Elle n'a été ni demandée ni validée par la mairie.
 
 - Contenus repris du site actuel ; les informations anciennes sont marquées « à vérifier », les manquantes « à compléter par la mairie ».
